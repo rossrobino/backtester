@@ -10,7 +10,7 @@
             method: 'GET',
             headers: {
                 'X-RapidAPI-Host': 'alpha-vantage.p.rapidapi.com',
-                'X-RapidAPI-Key': process.env.AV_API_KEY
+                'X-RapidAPI-Key': process.env.AV_API_KEY 
             }
         }).then(response => response.json())
         .then(data => {

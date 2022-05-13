@@ -6,11 +6,11 @@
     yesterday = yesterday.toISOString().split("T")[0];
 
     async function getPrices() {
-        fetch(`https://alpha-vantage.p.rapidapi.com/query?function=TIME_SERIES_DAILY&symbol=${$ticker}&outputsize=full&datatype=json`, {
+        fetch(`https://alpha-vantage.p.rapidapi.com/query?function=TIME_SERIES_DAILY&symbol=${$ticker}&outputsize=compact&datatype=json`, {
             method: 'GET',
             headers: {
                 'X-RapidAPI-Host': 'alpha-vantage.p.rapidapi.com',
-                'X-RapidAPI-Key': process.env.AV_API_KEY 
+                'X-RapidAPI-Key': '' 
             }
         }).then(response => response.json())
         .then(data => {

@@ -1,7 +1,7 @@
 <script>
     import { ticker, startDate, endDate, startPrice, endPrice, submitted, success, apiData, metadata, symbol } from '../stores';
     
-    // import API key, use correct key depending on env
+    // import API key, assign correctly depending on env
     import { AV_API_KEY } from '$lib/env';
     let avApiKey;
     if (typeof AV_API_KEY === 'string') {

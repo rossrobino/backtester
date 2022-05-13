@@ -1,14 +1,7 @@
 <script>
-    export let title;
+    export let title = "Backtracker";
 </script>
 
 <nav>
     <h1>{title}</h1>
 </nav>
-
-
-<style>
-    h1 {
-        color: green;
-    }
-</style>

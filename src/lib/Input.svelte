@@ -1,5 +1,6 @@
 <script>
     import { ticker, startDate, endDate, startPrice, endPrice, submitted, success, apiData, metadata, symbol } from '../stores';
+    import { AV_API_KEY } from '$lib/env';
     
     let yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
@@ -10,7 +11,7 @@
             method: 'GET',
             headers: {
                 'X-RapidAPI-Host': 'alpha-vantage.p.rapidapi.com',
-                'X-RapidAPI-Key': '' 
+                'X-RapidAPI-Key': AV_API_KEY
             }
         }).then(response => response.json())
         .then(data => {

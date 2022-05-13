@@ -1,0 +1,1 @@
+export const AV_API_KEY = import.meta.env.VITE_AV_API_KEY;

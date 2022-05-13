@@ -1,20 +1,27 @@
 <script>
     import { ticker, startDate, endDate, startPrice, endPrice, submitted, success, apiData, metadata, symbol } from '../stores';
-    import { AV_API_KEY } from '$lib/env';
-
-    console.log(typeof AV_API_KEY);
     
+    // import API key, use correct key depending on env
+    import { AV_API_KEY } from '$lib/env';
+    let avApiKey;
+    if (typeof AV_API_KEY === 'string') {
+        avApiKey = AV_API_KEY;
+    } else {
+        avApiKey = process.env.AV_API_KEY;
+    }
+    
+    // calculate yesterday's date
     let yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     yesterday = yesterday.toISOString().split("T")[0];
 
+    // request data from alpha vantage api, run setData if successful
     async function getPrices() {
         fetch(`https://alpha-vantage.p.rapidapi.com/query?function=TIME_SERIES_DAILY&symbol=${$ticker}&outputsize=compact&datatype=json`, {
             method: 'GET',
             headers: {
                 'X-RapidAPI-Host': 'alpha-vantage.p.rapidapi.com',
-                'X-RapidAPI-Key': process.env.AV_API_KEY
-                // process.env.AV_API_KEY
+                'X-RapidAPI-Key': avApiKey
             }
         }).then(response => response.json())
         .then(data => {
@@ -26,6 +33,7 @@
         });
     }
 
+    // sets data from request to stores
     function setData(data) {
         console.log(data);
         apiData.set(data);

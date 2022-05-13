@@ -29,7 +29,7 @@
     // request data from alpha vantage api, run setData if successful
     async function getPrices() {
         success.set(false);
-        fetch(`https://alpha-vantage.p.rapidapi.com/query?function=TIME_SERIES_DAILY&symbol=${$ticker}&outputsize=compact&datatype=json`, {
+        fetch(`https://alpha-vantage.p.rapidapi.com/query?function=TIME_SERIES_DAILY&symbol=${$ticker.trim()}&outputsize=compact&datatype=json`, {
             method: 'GET',
             headers: {
                 'X-RapidAPI-Host': 'alpha-vantage.p.rapidapi.com',

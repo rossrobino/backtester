@@ -57,7 +57,8 @@
     }
 
     function calculate() {
-        $rateOfReturn = round(-100*(1-($endPrice/$startPrice)), 2)
+        $rateOfReturn = round(($endPrice-$startPrice)/$startPrice*100, 2);
+
     }
 
     // https://www.jacklmoore.com/notes/rounding-in-javascript/
@@ -110,12 +111,9 @@
                 {/if}
             </td>
             
-        </tr>
-        
-        <tr>
+        </tr>    
+        <tr id="submitRow">
             <td><button type="submit">Submit</button></td>
         </tr>
     </table>
 </form>
-
-

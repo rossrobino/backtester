@@ -8,9 +8,6 @@
             <tr>
                 <th>Ticker:</th>
                 <td>{$symbol}</td>
-                
-                
-                
             </tr>
             <tr>
                 <th>{$startDate} Close:</th>
@@ -19,7 +16,6 @@
             <tr>
                 <th>{$endDate} Close:</th>
                 <td>{$endPrice}</td>
-                
             </tr>
             <tr>
                 <th>Buy and hold RoR:</th>

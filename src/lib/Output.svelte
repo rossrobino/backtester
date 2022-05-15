@@ -2,27 +2,36 @@
     import { submitted, success, symbol, startPrice, endPrice, startDate, endDate, rateOfReturn } from '../stores';
 </script>
 
+<div class="lineBreak"></div>
+
 {#if ($submitted)}
     {#if ($success)}
         <table>
             <tr>
-                <th>Ticker:</th>
+                <td>Ticker:</td>
                 <td>{$symbol}</td>
             </tr>
             <tr>
-                <th>{$startDate} Close:</th>
+                <td>{$startDate} Close:</td>
                 <td>{$startPrice}</td>
             </tr>
             <tr>
-                <th>{$endDate} Close:</th>
+                <td>{$endDate} Close:</td>
                 <td>{$endPrice}</td>
             </tr>
             <tr>
-                <th>Buy and hold RoR:</th>
+                <td>Buy and hold RoR:</td>
                 <td>{$rateOfReturn}%</td>
             </tr>
         </table>
     {:else}
-        <p>loading...</p>
+        Loading...
     {/if}   
 {/if}
+
+<style>
+    .lineBreak {
+        flex-basis: 100%;
+        height: 10vh;
+    }
+</style>

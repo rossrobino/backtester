@@ -113,7 +113,17 @@
             
         </tr>    
         <tr id="submitRow">
+            <td></td>
             <td><button type="submit">Submit</button></td>
         </tr>
     </table>
 </form>
+
+<style>
+    input {
+        width: 100%;
+    }
+    select {
+        width: 100%;
+    }
+</style>

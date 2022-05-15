@@ -15,10 +15,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 10vw 0;
+        margin: 2.65vw 0;
         height: 20vw;
         text-align: center;
         background-color: green;
-        transform: skewY(-10deg);
+        transform: skewY(-3deg);
     }
 </style>

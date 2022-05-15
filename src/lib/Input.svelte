@@ -15,8 +15,8 @@
         'dateDetails': ['Buy and hold', 'Custom']
     }
     let strategy = {
-        'type': '',
-        'detail': ''
+        'type': 'Date',
+        'detail': 'Buy and hold'
     }
     // calculate dates
     let yesterday = new Date();
@@ -76,22 +76,21 @@
 <form on:submit|preventDefault={handleSubmit}>
     <table>
         <tr>
-            <td><label for="ticker">Ticker:</label></td>
+            <td class="labelTd"><label for="ticker">Ticker</label></td>
             <td><input type="text" id="ticker" bind:value={$ticker} placeholder="ex: AAPL" required ></td>
         </tr>
         <tr>
-            <td><label for="startDate">Start Date:</label></td>
+            <td class="labelTd"><label for="startDate">Start</label></td>
             <td><input type="date" id="startDate" bind:value={$startDate} min={minDate} max={yesterday} required ></td>
         </tr>
         <tr>
-            <td><label for="endDate">End Date:</label></td>
+            <td class="labelTd"><label for="endDate">End</label></td>
             <td><input type="date" id="endDate" bind:value={$endDate} min={$startDate} max={yesterday} required></td>
         </tr>
         <tr>
-            <td><label for="strategy">Trade On:</label></td>
+            <td class="labelTd"><label for="strategy">Strategy</label></td>
             <td>
                 <select id="strategy" bind:value={strategy.type} required>
-                    <option selected disabled hidden></option>
                     {#each strategies.types as opt}
                         <option value={opt}>{opt}</option>
                     {/each}
@@ -99,31 +98,47 @@
             </td>
         </tr>
         <tr>
-            <td></td>
+            <td class="labelTd"><label for="detail">Detail</label></td>
             <td>
                 {#if strategy.type === 'Date'}
                     <select id="detail" bind:value={strategy.detail} required>
-                        <option selected disabled hidden></option>
                         {#each strategies.dateDetails as detail}
                             <option value={detail}>{detail}</option>
                         {/each}
                     </select>
                 {/if}
             </td>
-            
         </tr>    
         <tr id="submitRow">
-            <td></td>
-            <td><button type="submit">Submit</button></td>
+            <td colspan="2"><button type="submit">Submit</button></td>
         </tr>
     </table>
 </form>
 
 <style>
-    input {
-        width: 100%;
+    input, select, button {
+        width: 50vw;
+        height: 10vw;
+        font-size: 5vw;
+        size: 10;
+        padding: 5px;
+        box-sizing:content-box;
+        border: none;
     }
-    select {
+    button {
         width: 100%;
+        background-color: green;
+        color: white;
+    }
+    tr {
+        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
+    }
+    .labelTd {
+        border-right: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    label {
+        padding: 0 1em;
+        height: 100%;
     }
 </style>

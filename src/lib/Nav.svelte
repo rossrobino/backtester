@@ -15,13 +15,21 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 2.65vw 0;
+        margin: 2.65vw 0 9vw 0;
         height: 9vw;
         text-align: center;
-        background-color: green;
+        background-color: rgb(0, 90, 128);
         transform: skewY(-3deg);
     }
-    @media (max-width: 770px) {
+    @media (max-width: 1007px) {
+        h1 {
+            font-size: 10vw;
+        }
+        nav {
+            height: 15vw;
+        }
+    }
+    @media (max-width: 640px) {
         h1 {
             font-size: 12vw;
         }

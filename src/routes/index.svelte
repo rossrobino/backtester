@@ -6,13 +6,10 @@
 <svelte:head>
 	<title>Backtracker</title>
 	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap');
 		body {
-			@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap');
 			margin: 0;
-			font-family: 'Ubuntu Mono', monospace;
-		}
-		table {
-			width: 60vw;
+			font-family: 'Ubuntu Mono', monospace;	
 		}
 	</style>
 </svelte:head>

@@ -116,29 +116,55 @@
 </form>
 
 <style>
-    input, select, button {
-        width: 50vw;
-        height: 10vw;
-        font-size: 5vw;
-        size: 10;
-        padding: 5px;
-        box-sizing:content-box;
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-size: 2vw;
         border: none;
+    }
+    input, select {
+        width: 100%;
     }
     button {
         width: 100%;
-        background-color: green;
+        height: 5vw;
+        background-color: rgb(0, 90, 128);
         color: white;
     }
     tr {
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
-
-    }
-    .labelTd {
-        border-right: 1px solid rgba(0, 0, 0, 0.05);
+        height: 5vw;
+        background-color: white;
     }
     label {
         padding: 0 1em;
-        height: 100%;
     }
+    table {
+        width: 55vw;
+        background-color: white;
+    }
+    @media (max-width: 1007px) {
+        * {
+            font-size: 3vw;
+        }
+        table {
+            width: 70vw;
+        }
+        button, tr {
+            height: 7vw;
+        }
+    }
+    @media (max-width: 640px) {
+        * {
+            font-size: 5vw;
+        }
+        table {
+            width: 100vw;
+        }
+        button, tr {
+            height: 10vw;
+        }
+    }
+
 </style>

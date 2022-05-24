@@ -1,5 +1,5 @@
 <script>
-    import { ticker, startDate, endDate, startPrice, endPrice, submitted, success, apiData, metadata, symbol, rateOfReturn } from '../stores';
+    import { ticker, startDate, endDate, startPrice, endPrice, priceList, submitted, timeSeriesDaily, success, apiData, metadata, symbol, rateOfReturn, dateList, tradeList } from '../stores';
     
     // import API key, assign correctly depending on env
     import { AV_API_KEY } from '$lib/env';
@@ -11,13 +11,17 @@
     }
 
     const strategies = {
-        'types': ['Date','Price','Volume'],
-        'dateDetails': ['Buy and hold', 'Custom']
+        'types': ['Price','Date','Volume'],
+        'dateDetails': ['Buy and hold']
     }
     let strategy = {
-        'type': 'Date',
-        'detail': 'Buy and hold'
+        'type': 'Price',
+        'dateDetail': 'Buy and hold'
     }
+
+    let sellThreshold = 1;
+    let buyThreshold = -1;
+
     // calculate dates
     let yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
@@ -51,14 +55,67 @@
         console.log(data);
         apiData.set(data);
         metadata.set(data["Meta Data"]);
-        symbol.set(data["Meta Data"]["2. Symbol"].toUpperCase());
-        startPrice.set(Number(data["Time Series (Daily)"][$startDate]["4. close"]));
-        endPrice.set(Number(data["Time Series (Daily)"][$endDate]["4. close"]));
+        timeSeriesDaily.set(data["Time Series (Daily)"]);
+        symbol.set($metadata["2. Symbol"].toUpperCase());
+        startPrice.set(Number($timeSeriesDaily[$startDate]["4. close"]));
+        endPrice.set(Number($timeSeriesDaily[$endDate]["4. close"]));
     }
 
     function calculate() {
+        //calculate rate of return based on start and end dates' closing prices
         $rateOfReturn = round(($endPrice-$startPrice)/$startPrice*100, 2);
 
+        //get list of dates between start and end
+        let allDates = Object.keys($timeSeriesDaily);
+        $dateList = allDates.slice(allDates.indexOf($endDate), allDates.indexOf($startDate)+1);
+        $dateList = $dateList.reverse();
+        console.log($dateList);
+
+        //get prices for each date
+        priceList.set([]);
+        for (const date of $dateList) {
+            $priceList.push(parseFloat($timeSeriesDaily[date]["4. close"]));
+        }
+        console.log($priceList);
+
+        //when price increases by one percent, sell, print ending amount
+        let previousClose = $priceList[0];
+        let amount = $priceList[0];
+        let invested = true;
+        for (const price of $priceList.slice(1)) {
+            console.log('previousClose: ' + previousClose);
+            console.log('todaysClose: ' + price);
+            let percentChange = (price-previousClose)/previousClose*100;
+            console.log('percentChange: ' + percentChange);
+            console.log('invested? ' + invested);
+            if (invested) {
+                amount = amount * (1+(percentChange/100));
+            }
+            console.log('amount: ' + amount);
+            if (percentChange > sellThreshold) {
+                if (invested) {
+                    invested = false;
+                    console.log("Percent change is greater than " + sellThreshold + "--sell");
+                } else {
+                    console.log("can't sell, already out")
+                }
+            } else if (percentChange < buyThreshold) {
+                if (!invested) {
+                    invested = true;
+                    console.log("Percent change is less than " + buyThreshold + "--buy");
+                } else {
+                    console.log("can't buy, already in");
+                }
+            } else {
+                if (invested) {
+                    console.log('hold in');
+                } else {
+                    console.log('hold out')
+                }
+                
+            }
+            previousClose = price;
+        }
     }
 
     // https://www.jacklmoore.com/notes/rounding-in-javascript/
@@ -97,18 +154,34 @@
                 </select>
             </td>
         </tr>
-        <tr>
-            <td class="labelTd"><label for="detail">Detail</label></td>
-            <td>
-                {#if strategy.type === 'Date'}
-                    <select id="detail" bind:value={strategy.detail} required>
+        {#if strategy.type === 'Price'}
+            <tr>
+                <td colspan="2"><label for="buyThreshold">Buy when market is down more than {buyThreshold}%</label></td>
+            </tr>
+            <tr>
+                
+                <td colspan="2"><input type="range" min="-10" max="0" step='.25' id="buyThreshold" bind:value={buyThreshold} required></td>
+            </tr>
+            <tr>
+                <td colspan="2"><label for="sellThreshold">Sell when market is up more than {sellThreshold}%</label></td>
+            </tr>
+            <tr>
+                
+                <td colspan="2"><input type="range" min="0" max="10" step='.25' id="sellThreshold" bind:value={sellThreshold} required></td>
+            </tr>
+        {/if}
+        {#if strategy.type === 'Date'}
+            <tr>
+                <td class="labelTd"><label for="detail">Detail</label></td>
+                <td>
+                    <select id="detail" bind:value={strategy.dateDetail} required>
                         {#each strategies.dateDetails as detail}
                             <option value={detail}>{detail}</option>
                         {/each}
                     </select>
-                {/if}
-            </td>
-        </tr>    
+                </td>
+            </tr>
+        {/if}    
         <tr id="submitRow">
             <td colspan="2"><button type="submit">Submit</button></td>
         </tr>
@@ -132,10 +205,33 @@
         background-color: rgb(0, 90, 128);
         color: white;
     }
+    /* range styling from https://brennaobrien.com/blog/2014/05/style-input-type-range-in-every-browser.html */
+    input[type=range]{
+        -webkit-appearance: none;
+        padding: 0;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+        width: 300px;
+        height: 5px;
+        background: #ddd;
+        border: none;
+        border-radius: 3px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        border: none;
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        background: goldenrod;
+        margin-top: -6px;
+    }
+    input[type=range]:focus::-webkit-slider-runnable-track {
+        background: #ccc;
+    }
     tr {
-        box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
         height: 5vw;
-        background-color: white;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
     }
     label {
         padding: 0 1em;
@@ -157,7 +253,7 @@
     }
     @media (max-width: 640px) {
         * {
-            font-size: 5vw;
+            font-size: 4vw;
         }
         table {
             width: 100vw;
@@ -166,5 +262,4 @@
             height: 10vw;
         }
     }
-
 </style>

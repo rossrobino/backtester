@@ -62,6 +62,9 @@
     }
 
     function calculate() {
+        priceList.set([]);
+        tradeList.set([]);
+        
         //calculate rate of return based on start and end dates' closing prices
         $rateOfReturn = round(($endPrice-$startPrice)/$startPrice*100, 2);
 
@@ -72,7 +75,6 @@
         console.log($dateList);
 
         //get prices for each date
-        priceList.set([]);
         for (const date of $dateList) {
             $priceList.push(parseFloat($timeSeriesDaily[date]["4. close"]));
         }
@@ -82,40 +84,46 @@
         let previousClose = $priceList[0];
         let amount = $priceList[0];
         let invested = true;
+        let dateCounter = 1;
         for (const price of $priceList.slice(1)) {
-            console.log('previousClose: ' + previousClose);
-            console.log('todaysClose: ' + price);
+            let trade = {};
+            trade.date = $dateList[dateCounter];
+            dateCounter++;
+            trade.previousClose = previousClose;
+            trade.todayClose = price;
             let percentChange = (price-previousClose)/previousClose*100;
-            console.log('percentChange: ' + percentChange);
-            console.log('invested? ' + invested);
+            trade.percentChange = round(percentChange, 2);
+            trade.invested = invested;
             if (invested) {
                 amount = amount * (1+(percentChange/100));
             }
-            console.log('amount: ' + amount);
+            trade.amount = round(amount, 2);
             if (percentChange > sellThreshold) {
                 if (invested) {
                     invested = false;
-                    console.log("Percent change is greater than " + sellThreshold + "--sell");
+                    trade.outcome = 'SELL';
                 } else {
-                    console.log("can't sell, already out")
+                    trade.outcome = 'HOLD OUT';
                 }
             } else if (percentChange < buyThreshold) {
                 if (!invested) {
                     invested = true;
                     console.log("Percent change is less than " + buyThreshold + "--buy");
+                    trade.outcome = 'BUY';
                 } else {
-                    console.log("can't buy, already in");
+                    trade.outcome = 'HOLD IN'
                 }
             } else {
                 if (invested) {
-                    console.log('hold in');
+                    trade.outcome = 'HOLD IN'
                 } else {
-                    console.log('hold out')
+                    trade.outcome = 'HOLD OUT';
                 }
-                
             }
             previousClose = price;
+            $tradeList.push(trade);
         }
+        console.log($tradeList);
     }
 
     // https://www.jacklmoore.com/notes/rounding-in-javascript/
@@ -211,7 +219,6 @@
         padding: 0;
     }
     input[type=range]::-webkit-slider-runnable-track {
-        width: 300px;
         height: 5px;
         background: #ddd;
         border: none;

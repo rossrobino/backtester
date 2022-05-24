@@ -1,5 +1,5 @@
 <script>
-    import { submitted, success, symbol, startPrice, endPrice, startDate, endDate, rateOfReturn } from '../stores';
+    import { submitted, success, symbol, startPrice, endPrice, startDate, endDate, rateOfReturn, tradeList } from '../stores';
 </script>
 
 <div class="lineBreak"></div>
@@ -24,6 +24,27 @@
                 <td>{$rateOfReturn}%</td>
             </tr>
         </table>
+
+        
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Previous Close</th>
+                    <th>Today's Close</th>
+                    <th>Change</th>
+                    <th>In/Out</th>
+                    <th>Amount</th>
+                </tr>
+                {#each $tradeList as trade}
+                <tr>
+                    <td>{trade.date}</td>
+                    <td>{trade.previousClose}</td>
+                    <td>{trade.todayClose}</td>
+                    <td>{trade.percentChange}%</td>
+                    <td>{trade.invested ? "In" : "Out"}</td>
+                    <td>${trade.amount}</td>
+                </tr>{/each}
+            </table>
     {:else}
         Loading...
     {/if}   

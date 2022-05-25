@@ -15,11 +15,10 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 2.65vw 0 9vw 0;
+        margin-bottom: 9vw;
         height: 9vw;
         text-align: center;
         background-color: rgb(0, 90, 128);
-        transform: skewY(-3deg);
     }
     @media (max-width: 1007px) {
         h1 {

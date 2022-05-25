@@ -1,5 +1,10 @@
 <script>
     import { submitted, success, symbol, startPrice, endPrice, startDate, endDate, rateOfReturn, tradeList } from '../stores';
+
+    // https://www.jacklmoore.com/notes/rounding-in-javascript/
+    function round(value, decimals) {
+        return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+    }
 </script>
 
 <div class="lineBreak"></div>
@@ -7,26 +12,32 @@
 {#if ($submitted)}
     {#if ($success)}
         <table>
-            <caption>Buy and Hold</caption>
+            <caption>Strategy Comparison - {$symbol}</caption>
             <thead>
                 <tr>
-                    <th scope="col">Ticker</th>
-                    <th scope="col">{$startDate} Close</th>
-                    <th scope="col">{$endDate} Close</th>
-                    <th scope="col">Buy and hold RoR</th>
+                    <th scope="col">Strategy</th>
+                    <th scope="col">{$startDate} Start</th>
+                    <th scope="col">{$endDate} End</th>
+                    <th scope="col">Return</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td data-label="Ticker">{$symbol}</td>
-                    <td data-label='{$startDate} Close'>{$startPrice}</td>
-                    <td data-label='{$endDate} Close'>{$endPrice}</td>
+                    <td data-label="Strategy">Buy and Hold</td>
+                    <td data-label='{$startDate} Start'>{$startPrice}</td>
+                    <td data-label='{$endDate} End'>{$endPrice}</td>
                     <td data-label="Buy and hold RoR">{$rateOfReturn}%</td>
+                </tr>
+                <tr>
+                    <td data-label="Strategy">Your Strategy</td>
+                    <td data-label='{$startDate} Start'>{$startPrice}</td>
+                    <td data-label='{$endDate} End'>{$tradeList[$tradeList.length-1].amount}</td>
+                    <td data-label="Buy and hold RoR">{round((($tradeList[$tradeList.length-1].amount)-$startPrice)/$startPrice*100, 2)}%</td>
                 </tr>
             </tbody>
         </table>
         <table>
-            <caption>Your Strategy - Trade Summary</caption>
+            <caption>Trade Summary</caption>
             <thead>
                 <tr>
                     <th scope="col">Date</th>

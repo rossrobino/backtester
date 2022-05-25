@@ -127,7 +127,7 @@
     }
 
     // https://www.jacklmoore.com/notes/rounding-in-javascript/
-    function round(value, decimals) {
+    export function round(value, decimals) {
         return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
     }
 
@@ -168,14 +168,14 @@
             </tr>
             <tr>
                 
-                <td colspan="2"><input type="range" min="-10" max="0" step='.25' id="buyThreshold" bind:value={buyThreshold} required></td>
+                <td colspan="2"><input type="range" min="-10" max="0" step='.5' id="buyThreshold" bind:value={buyThreshold} required></td>
             </tr>
             <tr>
                 <td colspan="2"><label for="sellThreshold">Sell when market is up more than {sellThreshold}%</label></td>
             </tr>
             <tr>
                 
-                <td colspan="2"><input type="range" min="0" max="10" step='.25' id="sellThreshold" bind:value={sellThreshold} required></td>
+                <td colspan="2"><input type="range" min="0" max="10" step='.5' id="sellThreshold" bind:value={sellThreshold} required></td>
             </tr>
         {/if}
         {#if strategy.type === 'Date'}

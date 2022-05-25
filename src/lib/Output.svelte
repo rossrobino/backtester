@@ -7,46 +7,51 @@
 {#if ($submitted)}
     {#if ($success)}
         <table>
-            <tr>
-                <td>Ticker:</td>
-                <td>{$symbol}</td>
-            </tr>
-            <tr>
-                <td>{$startDate} Close:</td>
-                <td>{$startPrice}</td>
-            </tr>
-            <tr>
-                <td>{$endDate} Close:</td>
-                <td>{$endPrice}</td>
-            </tr>
-            <tr>
-                <td>Buy and hold RoR:</td>
-                <td>{$rateOfReturn}%</td>
-            </tr>
-        </table>
-
-        
-            <table>
+            <caption>Buy and Hold</caption>
+            <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Previous Close</th>
-                    <th>Today's Close</th>
-                    <th>Change</th>
-                    <th>In/Out</th>
-                    <th>Amount</th>
-                    <th>Action</th>
+                    <th scope="col">Ticker</th>
+                    <th scope="col">{$startDate} Close</th>
+                    <th scope="col">{$endDate} Close</th>
+                    <th scope="col">Buy and hold RoR</th>
                 </tr>
-                {#each $tradeList as trade}
+            </thead>
+            <tbody>
                 <tr>
-                    <td>{trade.date}</td>
-                    <td>{trade.previousClose}</td>
-                    <td>{trade.todayClose}</td>
-                    <td>{trade.percentChange}%</td>
-                    <td>{trade.invested ? "In" : "Out"}</td>
-                    <td>${trade.amount}</td>
-                    <td>{trade.outcome}</td>
-                </tr>{/each}
-            </table>
+                    <td data-label="Ticker">{$symbol}</td>
+                    <td data-label='{$startDate} Close'>{$startPrice}</td>
+                    <td data-label='{$endDate} Close'>{$endPrice}</td>
+                    <td data-label="Buy and hold RoR">{$rateOfReturn}%</td>
+                </tr>
+            </tbody>
+        </table>
+        <table>
+            <caption>Your Strategy - Trade Summary</caption>
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Previous Day Close</th>
+                    <th scope="col">Close</th>
+                    <th scope="col">Change</th>
+                    <th scope="col">In/Out</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {#each $tradeList as trade}
+                    <tr>
+                        <td data-label="Date">{trade.date}</td>
+                        <td data-label="Previous Day Close">{trade.previousClose}</td>
+                        <td data-label="Close">{trade.todayClose}</td>
+                        <td data-label="Change">{trade.percentChange}%</td>
+                        <td data-label="In/Out">{trade.invested ? "In" : "Out"}</td>
+                        <td data-label="Amount">${trade.amount}</td>
+                        <td data-label="Action">{trade.outcome}</td>
+                    </tr>
+                {/each}
+            </tbody>
+        </table>
     {:else}
         Loading...
     {/if}   
@@ -57,4 +62,79 @@
         flex-basis: 100%;
         height: 10vh;
     }
+    /* table styles from https://codepen.io/AllThingsSmitty/pen/MyqmdM */
+    table {
+        border: 1px solid #ccc;
+        border-collapse: collapse;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        table-layout: fixed;
+    }
+    table caption {
+        font-size: 1.5em;
+        margin: .5em 0 .75em;
+    }
+    table tr {
+        background-color: #f8f8f8;
+        border: 1px solid #ddd;
+        padding: .35em;
+    }
+    table th, table td {
+        padding: .625em;
+        text-align: center;
+    }
+    table th {
+        font-size: .85em;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+    }
+    @media screen and (max-width: 640px) {
+  table {
+    border: 0;
+  }
+
+  table caption {
+    font-size: 1.3em;
+  }
+  
+  table thead {
+    border: none;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+  }
+  
+  table tr {
+    border-bottom: 3px solid #ddd;
+    display: block;
+    margin-bottom: .625em;
+  }
+  
+  table td {
+    border-bottom: 1px solid #ddd;
+    display: block;
+    font-size: .8em;
+    text-align: right;
+  }
+  
+  table td::before {
+    /*
+    * aria-label has no advantage, it won't be read inside a table
+    content: attr(aria-label);
+    */
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  
+  table td:last-child {
+    border-bottom: 0;
+  }
+}
 </style>

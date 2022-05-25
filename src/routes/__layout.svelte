@@ -13,7 +13,7 @@
 	</div>
 	<footer>
 		<div id='#created'>
-			<a href="https://robino.dev" target="_blank">robino.dev</a>
+			<a href="https://github.com/rossrobino" target="_blank">Created by Ross Robino</a>
 		</div>
 	</footer>
 </div>
@@ -26,23 +26,32 @@
 		font-size: 1.2em;
 	}
 	footer {
-		height: 10vw;
+		height: 3vw;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		background-color: rgb(0, 90, 128);
 		color: white;
 		margin-top: 3vw;
-		padding: 3vw 0;
+		padding: 1vw 0;
 	}
 	footer a {
 		color: white;
-		font-size: 3.5vw;
+		font-size: 1.5vw;
 	}
 	#wrapAll {
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
 		height: 100vh;
+	}
+	@media (max-width: 640px) {
+		footer {
+			height: 10vw;
+			padding: 3vw 0;
+		}
+		footer a {
+			font-size: 4vw;
+		}
 	}
 </style>

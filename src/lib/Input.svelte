@@ -142,83 +142,73 @@
 
 <form on:submit|preventDefault={handleSubmit}>
     <table>
-        <tr>
-            <td class="labelTd"><label for="ticker">Ticker</label></td>
-            <td><input type="text" id="ticker" bind:value={$ticker} placeholder="ex: AAPL" required ></td>
-        </tr>
-        <tr>
-            <td class="labelTd"><label for="startDate">Start</label></td>
-            <td><input type="date" id="startDate" bind:value={$startDate} min={minDate} max={yesterday} required ></td>
-        </tr>
-        <tr>
-            <td class="labelTd"><label for="endDate">End</label></td>
-            <td><input type="date" id="endDate" bind:value={$endDate} min={$startDate} max={yesterday} required></td>
-        </tr>
-        <tr>
-            <td class="labelTd"><label for="strategy">Strategy</label></td>
-            <td>
-                <select id="strategy" bind:value={strategy.type} required>
-                    {#each strategies.types as opt}
-                        <option value={opt}>{opt}</option>
-                    {/each}
-                </select>
-            </td>
-        </tr>
-        {#if strategy.type === 'Price'}
+        <thead>
             <tr>
-                <td colspan="2"><label for="buyThreshold">Buy when market is down more than {buyThreshold}%</label></td>
+                <th class="labelTd" scope="col"><label for="ticker">Ticker</label></th>
+                <th class="labelTd" scope="col"><label for="startDate">Start</label></th>
+                <th class="labelTd" scope="col"><label for="endDate">End</label></th>
+                <th class="labelTd" scope="col"><label for="strategy">Strategy</label></th>
             </tr>
+        </thead>
+        <tbody>
             <tr>
-                
-                <td colspan="2"><input type="range" min="-10" max="0" step='.5' id="buyThreshold" bind:value={buyThreshold} required></td>
-            </tr>
-            <tr>
-                <td colspan="2"><label for="sellThreshold">Sell when market is up more than {sellThreshold}%</label></td>
-            </tr>
-            <tr>
-                
-                <td colspan="2"><input type="range" min="0" max="10" step='.5' id="sellThreshold" bind:value={sellThreshold} required></td>
-            </tr>
-        {/if}
-        {#if strategy.type === 'Date'}
-            <tr>
-                <td class="labelTd"><label for="detail">Detail</label></td>
-                <td>
-                    <select id="detail" bind:value={strategy.dateDetail} required>
-                        {#each strategies.dateDetails as detail}
-                            <option value={detail}>{detail}</option>
+                <td data-label="Ticker"><input type="text" id="ticker" bind:value={$ticker} placeholder="ex: AAPL" required ></td>
+                <td data-label="Start"><input type="date" id="startDate" bind:value={$startDate} min={minDate} max={yesterday} required ></td>
+                <td data-label="End"><input type="date" id="endDate" bind:value={$endDate} min={$startDate} max={yesterday} required></td>
+                <td data-label="Strategy">
+                    <select id="strategy" bind:value={strategy.type} required>
+                        {#each strategies.types as opt}
+                            <option value={opt}>{opt}</option>
                         {/each}
                     </select>
                 </td>
             </tr>
-        {/if}    
-        <tr id="submitRow">
-            <td colspan="2"><button type="submit">Submit</button></td>
-        </tr>
+            {#if strategy.type === 'Price'}
+                <tr>
+                    <th colspan="2"><label for="buyThreshold">Buy when market is down more than {buyThreshold}%</label></th>
+                    <td colspan="2"><input type="range" min="-10" max="0" step='.5' id="buyThreshold" bind:value={buyThreshold} required></td>
+                </tr>
+                <tr>
+                    <th colspan="2"><label for="sellThreshold">Sell when market is up more than {sellThreshold}%</label></th>
+                    <td colspan="2"><input type="range" min="0" max="10" step='.5' id="sellThreshold" bind:value={sellThreshold} required></td>
+                </tr>
+            {/if}
+            {#if strategy.type === 'Date'}
+                <tr>
+                    <td class="labelTd"><label for="detail">Detail</label></td>
+                    <td>
+                        <select id="detail" bind:value={strategy.dateDetail} required>
+                            {#each strategies.dateDetails as detail}
+                                <option value={detail}>{detail}</option>
+                            {/each}
+                        </select>
+                    </td>
+                </tr>
+            {/if}    
+            <tr id="submitRow">
+                <td colspan="4"><button type="submit">SUBMIT</button></td>
+            </tr>
+        </tbody>
     </table>
 </form>
 
 <style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-size: 2vw;
-        border: none;
-    }
-    input, select {
-        width: 100%;
+    form {
+        margin-bottom: 6vw;
     }
     button {
-        width: 100%;
-        height: 5vw;
+        width: 35%;
+        height: 3em;
         background-color: rgb(0, 90, 128);
         color: white;
+        border: none;
     }
+
     /* range styling from https://brennaobrien.com/blog/2014/05/style-input-type-range-in-every-browser.html */
     input[type=range]{
         -webkit-appearance: none;
         padding: 0;
+        width: 100%;
     }
     input[type=range]::-webkit-slider-runnable-track {
         height: 5px;
@@ -238,37 +228,65 @@
     input[type=range]:focus::-webkit-slider-runnable-track {
         background: #ccc;
     }
-    tr {
-        height: 5vw;
-        box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
-    }
-    label {
-        padding: 0 1em;
-    }
+
+    /* table styles from https://codepen.io/AllThingsSmitty/pen/MyqmdM */
     table {
-        width: 55vw;
-        background-color: white;
+        border: 1px solid #ccc;
+        border-collapse: collapse;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        table-layout: fixed;
     }
-    @media (max-width: 1007px) {
-        * {
-            font-size: 3vw;
-        }
-        table {
-            width: 70vw;
-        }
-        button, tr {
-            height: 7vw;
-        }
+    table tr {
+        background-color: #fdfdfd;
+        border: 1px solid #ddd;
+        padding: .35em;
     }
-    @media (max-width: 640px) {
-        * {
-            font-size: 4vw;
-        }
+    table th, table td {
+        padding: .625em;
+        text-align: center;
+    }
+    table th {
+        font-size: .85em;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+    }
+    @media screen and (max-width: 640px) {
         table {
-            width: 100vw;
+            border: 0;
         }
-        button, tr {
-            height: 10vw;
+        table thead {
+            border: none;
+            clip: rect(0 0 0 0);
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            padding: 0;
+            position: absolute;
+            width: 1px;
+        }
+        
+        table tr {
+            display: block;
+        }
+        
+        table td {
+            border-bottom: 1px solid #ddd;
+            display: block;
+            font-size: .8em;
+            text-align: right;
+        }
+        
+        table td::before {
+            content: attr(data-label);
+            float: left;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        
+        table td:last-child {
+            border-bottom: 0;
         }
     }
 </style>

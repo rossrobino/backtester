@@ -7,7 +7,7 @@
     }
 </script>
 
-<div class="lineBreak"></div>
+
 
 {#if ($submitted)}
     {#if ($success)}
@@ -67,10 +67,6 @@
 {/if}
 
 <style>
-    .lineBreak {
-        flex-basis: 100%;
-        height: 10vh;
-    }
     /* table styles from https://codepen.io/AllThingsSmitty/pen/MyqmdM */
     table {
         border: 1px solid #ccc;
@@ -85,7 +81,7 @@
         margin: .5em 0 .75em;
     }
     table tr {
-        background-color: #f8f8f8;
+        background-color: #fdfdfd;
         border: 1px solid #ddd;
         padding: .35em;
     }
@@ -132,10 +128,6 @@
   }
   
   table td::before {
-    /*
-    * aria-label has no advantage, it won't be read inside a table
-    content: attr(aria-label);
-    */
     content: attr(data-label);
     float: left;
     font-weight: bold;

@@ -15,7 +15,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 9vw;
+        margin-bottom: 6vw;
         height: 9vw;
         text-align: center;
         background-color: rgb(0, 90, 128);

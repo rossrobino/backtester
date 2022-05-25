@@ -12,11 +12,8 @@
 		</main>
 	</div>
 	<footer>
-		<div>
-			Created by 
-			<a href="https://robino.dev" target="_blank">
-				Ross Robino
-			</a>
+		<div id='#created'>
+			<a href="https://robino.dev" target="_blank">robino.dev</a>
 		</div>
 	</footer>
 </div>
@@ -36,9 +33,11 @@
 		background-color: rgb(0, 90, 128);
 		color: white;
 		margin-top: 3vw;
+		padding: 3vw 0;
 	}
 	footer a {
 		color: white;
+		font-size: 3.5vw;
 	}
 	#wrapAll {
 		display: flex;

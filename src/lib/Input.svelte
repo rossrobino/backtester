@@ -121,7 +121,9 @@
                 }
             }
             previousClose = price;
-            $tradeList.push(trade);
+            if (trade.outcome === 'BUY' || trade.outcome === 'SELL') {
+                $tradeList.push(trade);
+            }
         }
         console.log($tradeList);
     }

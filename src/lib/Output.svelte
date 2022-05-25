@@ -44,7 +44,6 @@
                     <th scope="col">Previous Day Close</th>
                     <th scope="col">Close</th>
                     <th scope="col">Change</th>
-                    <th scope="col">In/Out</th>
                     <th scope="col">Amount</th>
                     <th scope="col">Action</th>
                 </tr>
@@ -56,7 +55,6 @@
                         <td data-label="Previous Day Close">{trade.previousClose}</td>
                         <td data-label="Close">{trade.todayClose}</td>
                         <td data-label="Change">{trade.percentChange}%</td>
-                        <td data-label="In/Out">{trade.invested ? "In" : "Out"}</td>
                         <td data-label="Amount">${trade.amount}</td>
                         <td data-label="Action">{trade.outcome}</td>
                     </tr>

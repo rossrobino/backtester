@@ -34,6 +34,7 @@
                     <th>Change</th>
                     <th>In/Out</th>
                     <th>Amount</th>
+                    <th>Action</th>
                 </tr>
                 {#each $tradeList as trade}
                 <tr>
@@ -43,6 +44,7 @@
                     <td>{trade.percentChange}%</td>
                     <td>{trade.invested ? "In" : "Out"}</td>
                     <td>${trade.amount}</td>
+                    <td>{trade.outcome}</td>
                 </tr>{/each}
             </table>
     {:else}

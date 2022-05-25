@@ -26,7 +26,8 @@
             </tbody>
         </table>
         <table>
-            <caption>Your Strategy - Trade Summary</caption>
+            <caption>Your Strategy - 
+                Trade Summary</caption>
             <thead>
                 <tr>
                     <th scope="col">Date</th>

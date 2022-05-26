@@ -197,9 +197,6 @@
         color: white;
         border: none;
     }
-    form {
-        margin-bottom: 6vw;
-    }
 
     /* 
         range styles from:
@@ -257,7 +254,7 @@
         text-align: center;
     }
     table th {
-        font-size: .8em;
+        font-size: .85em;
         letter-spacing: .1em;
         text-transform: uppercase;
     }

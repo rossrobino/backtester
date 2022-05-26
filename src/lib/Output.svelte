@@ -34,13 +34,13 @@
                         <td data-label="Strategy">Buy and Hold</td>
                         <td data-label='{$startDate}'>{$startPrice}</td>
                         <td data-label='{$endDate}'>{$endPrice}</td>
-                        <td data-label="Rate of Return">{$rateOfReturn}%</td>
+                        <td data-label="Return">{$rateOfReturn}%</td>
                     </tr>
                     <tr>
                         <td data-label="Strategy">Price Volatility</td>
                         <td data-label='{$startDate}'>{$startPrice}</td>
                         <td data-label='{$endDate}'>{$tradeList[$tradeList.length-1].amount}</td>
-                        <td data-label="Rate of Return">{round((($tradeList[$tradeList.length-1].amount)-$startPrice)/$startPrice*100, 2)}%</td>
+                        <td data-label="Return">{round((($tradeList[$tradeList.length-1].amount)-$startPrice)/$startPrice*100, 2)}%</td>
                     </tr>
                 </tbody>
             </table>

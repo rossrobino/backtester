@@ -152,10 +152,11 @@
         return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
     }
 
-    // triggers API call and caculations, submitted controls loading logic
+    // triggers API call and caculations, submitted controls loading logic, reset error store
     function handleSubmit() {
         getPrices();
         submitted.set(true);
+        error.set('');
     }
 </script>
 

@@ -1,6 +1,6 @@
 <footer>
     <div id='#created'>
-        <a href="https://github.com/rossrobino" target="_blank">View project on GitHub</a>
+        <a href="https://github.com/rossrobino/backtracker" target="_blank">View project on GitHub</a>
     </div>
 </footer>
 

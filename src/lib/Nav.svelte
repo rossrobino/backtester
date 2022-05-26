@@ -1,9 +1,5 @@
-<script>
-    export let title = "Backtracker";
-</script>
-
 <nav>
-    <h1>{title}</h1>
+    <h1>Backtracker</h1>
 </nav>
 
 <style>
@@ -15,11 +11,11 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 6vw;
         height: 9vw;
         text-align: center;
         background-color: rgb(0, 90, 128);
     }
+
     @media (max-width: 1007px) {
         h1 {
             font-size: 10vw;
@@ -28,6 +24,7 @@
             height: 15vw;
         }
     }
+    
     @media (max-width: 640px) {
         h1 {
             font-size: 12vw;

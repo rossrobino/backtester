@@ -235,12 +235,21 @@
         return year % 100 === 0 ? year % 400 === 0 : year % 4 === 0;
     }
 
+    function zoomOut() {
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if ( viewport ) {
+            viewport.content = 'initial-scale=1';
+            viewport.content = 'width=device-width';
+        }
+  }
+
     // triggers API call and caculations, submitted controls loading logic, reset error store
     function handleSubmit() {
         getPrices();
         submitted.set(true);
         success.set(false);
         error.set('');
+        zoomOut();
     }
 </script>
 

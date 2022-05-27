@@ -24,8 +24,7 @@
 
     // request data from alpha vantage api
     async function getPrices() {
-        success.set(false);
-        fetch(`https://alpha-vantage.p.rapidapi.com/query?function=TIME_SERIES_DAILY&symbol=${$ticker.trim()}&outputsize=compact&datatype=json`, {
+        fetch(`https://alpha-vantage.p.rapidapi.com/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${$ticker.trim()}&outputsize=compact&datatype=json`, {
             method: 'GET',
             headers: {
                 'X-RapidAPI-Host': 'alpha-vantage.p.rapidapi.com',
@@ -49,11 +48,85 @@
         metadata.set(data["Meta Data"]);
         timeSeriesDaily.set(data["Time Series (Daily)"]);
         symbol.set($metadata["2. Symbol"].toUpperCase());
-        startPrice.set(Number($timeSeriesDaily[$startDate]["4. close"]));
-        endPrice.set(Number($timeSeriesDaily[$endDate]["4. close"]));
+
+        // check start date to see if the market was closed, correct accordingly
+        for (let i = 0; i < 6; i++) {
+            try {
+                startPrice.set(Number($timeSeriesDaily[$startDate]["4. close"]));
+                break;
+            } catch {
+                let newDate = $startDate.split('-');
+
+                // if it's the last day of the month, reset day and increment month
+                if ((newDate[2] === '31') || 
+                    ((newDate[1] === '04' || newDate[1] === '06' || newDate[1] === '09' || newDate[1] === '11') && newDate[2] === '30') ||
+                    ((newDate[1] === '02' && newDate[2] === '28') && !leapYear(parseInt(newDate[0]))) ||
+                    ((newDate[1] === '02' && newDate[2] === '29')) 
+                    ) {
+                    newDate[2] = '0';
+                    if (newDate[1] === '12') {
+                        newDate[1] = '01';
+                    } else {
+                        newDate[1] = (parseInt(newDate[1])+1).toString();
+                        if (newDate[1].length < 2) {
+                            newDate[1] = "0" + newDate[1];
+                        }
+                    }
+                }
+
+                // increment day, set back to string, update start date
+                newDate[2] = (parseInt(newDate[2])+1).toString();
+                if (newDate[2].length < 2) {
+                    newDate[2] = "0" + newDate[2];
+                }
+                newDate = newDate.join('-');
+                startDate.set(newDate);
+            }
+
+            // if error is still not correct after the fifth iteration, display message
+            if (i === 5) {
+                error.set('please select a new start date.');
+            }
+        }
+
+        // check start date to see if the market was closed, correct accordingly
+        for (let i = 0; i < 6; i++) {
+            try {
+                endPrice.set(Number($timeSeriesDaily[$endDate]["4. close"]));
+                break;
+            } catch {
+                let newDate = $endDate.split('-');
+
+                // if it's the first day of the month, reset day to and decrement month
+                if ( newDate[2] === '01' ) {
+                    newDate[2] = '32';
+                    if (newDate[1] === '01') {
+                        newDate[1] = '12';
+                    } else {
+                        newDate[1] = (parseInt(newDate[1])-1).toString();
+                        if (newDate[1].length < 2) {
+                            newDate[1] = "0" + newDate[1];
+                        }
+                    }
+                }
+
+                // decrement day, set back to string, update start date
+                newDate[2] = (parseInt(newDate[2])-1).toString();
+                if (newDate[2].length < 2) {
+                    newDate[2] = "0" + newDate[2];
+                }
+                newDate = newDate.join('-');
+                endDate.set(newDate);
+            }
+
+            // if error is still not correct after the fifth iteration, display message
+            if (i === 5) {
+                error.set('please select a new end date.');
+            }
+        }
     }
 
-    // 
+    // determine results and set values into stores.js
     function calculate() {
         // empty out price and trade lists in case of multiple submissions
         priceList.set([]);
@@ -152,10 +225,21 @@
         return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
     }
 
+    /*
+        leap year function from:
+        JavaScript: Check whether a given year is a leap year in the Gregorian calendar
+        5/27/22
+        https://www.w3resource.com/javascript-exercises/javascript-basic-exercise-6.php
+    */
+    function leapYear(year) {
+        return year % 100 === 0 ? year % 400 === 0 : year % 4 === 0;
+    }
+
     // triggers API call and caculations, submitted controls loading logic, reset error store
     function handleSubmit() {
         getPrices();
         submitted.set(true);
+        success.set(false);
         error.set('');
     }
 </script>

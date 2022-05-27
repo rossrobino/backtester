@@ -15,7 +15,7 @@
 
 <!-- if statement manages the loading message -->
 {#if ($submitted)}
-    {#if ($success)}
+    {#if ($success && $error === '')}
         {#if ($tradeList.length === 0)}
             No trades were completed.
         {:else}
@@ -72,8 +72,7 @@
             </table>
         {/if}
     {:else if ($error !== '')}
-        <p>An error occured, please refresh the page and try again.</p>
-        <p>{$error}</p>
+        <p>Error- {$error}</p>
     {:else}
         <p>Loading...</p>
     {/if}

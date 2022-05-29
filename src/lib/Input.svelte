@@ -1,6 +1,5 @@
 <script>
     import { apiData, dateList, endDate, endPrice, error, longTerm, metadata, priceList, rateOfReturn, startDate, startPrice, submitted, success, symbol, ticker, timeSeriesDaily, tradeList } from '../stores';
-    import Switch from '$lib/Switch.svelte';
 
     // import API key, assign correctly depending on environment
     import { AV_API_KEY } from '$lib/env';
@@ -34,7 +33,6 @@
             }
         }).then(response => response.json())
         .then(data => {
-            console.log(data);
             setData(data);
             calculate();
             success.set(true);
@@ -240,6 +238,18 @@
 
     // triggers API call and caculations, submitted controls loading logic, reset error store
     function handleSubmit() {
+        // check if compact or full request should be made, set $longTerm accordingly
+        let checkStartDate = $startDate.split('-');
+        let checkShortDate = shortDate.split('-');
+        if (
+            (checkStartDate[0] < checkShortDate[0]) ||
+            ((checkStartDate[0] === checkShortDate[0]) && (checkStartDate[1] < checkShortDate[1])) ||
+            ((checkStartDate[0] === checkShortDate[0]) && (checkStartDate[1] === checkShortDate[1]) && (checkStartDate[2] < checkShortDate[2]))
+            ) {
+                longTerm.set(true);
+        } else {
+            longTerm.set(false);
+        }
         getPrices();
         submitted.set(true);
         success.set(false);
@@ -252,9 +262,6 @@
         <thead>
             <tr>
                 <th class="labelTd" scope="col"><label for="ticker">Ticker</label></th>
-                <th class="labelTd" scope="col">
-                    <label for="longTerm">{$longTerm ? "long term (>140 days)" : "short term (<140 days)"}</label>
-                </th>
                 <th class="labelTd" scope="col"><label for="startDate">Start</label></th>
                 <th class="labelTd" scope="col"><label for="endDate">End</label></th>
             </tr>
@@ -262,20 +269,19 @@
         <tbody>
             <tr>
                 <td data-label="Ticker"><input type="text" id="ticker" bind:value={$ticker} placeholder="ex: AAPL" required ></td>
-                <td data-label="{$longTerm ? "long term (>140 days)" : "short term (<140 days)"}"><Switch id="longTerm" bind:checked={$longTerm}/></td>
-                <td data-label="Start"><input type="date" id="startDate" bind:value={$startDate} min={$longTerm ? longDate : shortDate} max={yesterday} required ></td>
+                <td data-label="Start"><input type="date" id="startDate" bind:value={$startDate} min={longDate} max={yesterday} required ></td>
                 <td data-label="End"><input type="date" id="endDate" bind:value={$endDate} min={$startDate} max={yesterday} required></td>
             </tr>
             <tr>
                 <th colspan="2"><label for="buyThreshold">Buy when market is down more than {buyThreshold}%</label></th>
-                <td colspan="2"><input type="range" min="-10" max="0" step='.5' id="buyThreshold" bind:value={buyThreshold} required></td>
+                <td colspan="1"><input type="range" min="-10" max="0" step='.5' id="buyThreshold" bind:value={buyThreshold} required></td>
             </tr>
             <tr>
                 <th colspan="2"><label for="sellThreshold">Sell when market is up more than {sellThreshold}%</label></th>
-                <td colspan="2"><input type="range" min="0" max="10" step='.5' id="sellThreshold" bind:value={sellThreshold} required></td>
+                <td colspan="1"><input type="range" min="0" max="10" step='.5' id="sellThreshold" bind:value={sellThreshold} required></td>
             </tr> 
             <tr id="submitRow">
-                <td colspan="4"><button type="submit">SUBMIT</button></td>
+                <td colspan="3"><button type="submit">SUBMIT</button></td>
             </tr>
         </tbody>
     </table>

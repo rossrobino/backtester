@@ -5,6 +5,7 @@ export const dateList = writable([]);
 export const endDate = writable('');
 export const endPrice = writable(0);
 export const error = writable('');
+export const longTerm = writable(false);
 export const metadata = writable({});
 export const priceList = writable([]);
 export const rateOfReturn = writable(0);

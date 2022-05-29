@@ -32,13 +32,13 @@
                 <tbody>
                     <tr>
                         <td data-label="Strategy">Buy and Hold</td>
-                        <td data-label='{$startDate}'>{$startPrice}</td>
-                        <td data-label='{$endDate}'>{$endPrice}</td>
+                        <td data-label='{$startDate}'>{round($startPrice,2)}</td>
+                        <td data-label='{$endDate}'>{round($endPrice, 2)}</td>
                         <td data-label="Return">{$rateOfReturn}%</td>
                     </tr>
                     <tr>
                         <td data-label="Strategy">Price Volatility</td>
-                        <td data-label='{$startDate}'>{$startPrice}</td>
+                        <td data-label='{$startDate}'>{round($startPrice,2)}</td>
                         <td data-label='{$endDate}'>{$tradeList[$tradeList.length-1].amount}</td>
                         <td data-label="Return">{round((($tradeList[$tradeList.length-1].amount)-$startPrice)/$startPrice*100, 2)}%</td>
                     </tr>
@@ -61,8 +61,8 @@
                     {#each $tradeList as trade}
                         <tr>
                             <td data-label="Date">{trade.date}</td>
-                            <td data-label="Previous Day Close">{trade.previousClose}</td>
-                            <td data-label="Close">{trade.todayClose}</td>
+                            <td data-label="Previous Day Close">{round(trade.previousClose,2)}</td>
+                            <td data-label="Close">{round(trade.todayClose,2)}</td>
                             <td data-label="Change">{trade.percentChange}%</td>
                             <td data-label="Amount">${trade.amount}</td>
                             <td data-label="Action">{trade.outcome}</td>

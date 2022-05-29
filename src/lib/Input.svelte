@@ -1,7 +1,8 @@
 <script>
-    import { apiData, dateList, endDate, endPrice, error, metadata, priceList, rateOfReturn, startDate, startPrice, submitted, success, symbol, ticker, timeSeriesDaily, tradeList } from '../stores';
-    
-    // import API key, assign correctly depending on env
+    import { apiData, dateList, endDate, endPrice, error, longTerm, metadata, priceList, rateOfReturn, startDate, startPrice, submitted, success, symbol, ticker, timeSeriesDaily, tradeList } from '../stores';
+    import Switch from '$lib/Switch.svelte';
+
+    // import API key, assign correctly depending on environment
     import { AV_API_KEY } from '$lib/env';
     let avApiKey;
     if (typeof AV_API_KEY === 'string') {
@@ -18,13 +19,14 @@
     let yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     yesterday = yesterday.toISOString().split("T")[0];
-    let minDate = new Date();
-    minDate.setDate(minDate.getDate() - 140);
-    minDate = minDate.toISOString().split("T")[0];
+    let shortDate = new Date();
+    shortDate.setDate(shortDate.getDate() - 140);
+    shortDate = shortDate.toISOString().split("T")[0];
+    let longDate = "1999-11-01";
 
     // request data from alpha vantage api
     async function getPrices() {
-        fetch(`https://alpha-vantage.p.rapidapi.com/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${$ticker.trim()}&outputsize=compact&datatype=json`, {
+        fetch(`https://alpha-vantage.p.rapidapi.com/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${$ticker.trim()}&outputsize=${$longTerm ? 'full' : 'compact'}&datatype=json`, {
             method: 'GET',
             headers: {
                 'X-RapidAPI-Host': 'alpha-vantage.p.rapidapi.com',
@@ -32,6 +34,7 @@
             }
         }).then(response => response.json())
         .then(data => {
+            console.log(data);
             setData(data);
             calculate();
             success.set(true);
@@ -52,7 +55,7 @@
         // check start date to see if the market was closed, correct accordingly
         for (let i = 0; i < 6; i++) {
             try {
-                startPrice.set(Number($timeSeriesDaily[$startDate]["4. close"]));
+                startPrice.set(Number($timeSeriesDaily[$startDate]["5. adjusted close"]));
                 break;
             } catch {
                 let newDate = $startDate.split('-');
@@ -92,7 +95,7 @@
         // check start date to see if the market was closed, correct accordingly
         for (let i = 0; i < 6; i++) {
             try {
-                endPrice.set(Number($timeSeriesDaily[$endDate]["4. close"]));
+                endPrice.set(Number($timeSeriesDaily[$endDate]["5. adjusted close"]));
                 break;
             } catch {
                 let newDate = $endDate.split('-');
@@ -119,7 +122,7 @@
                 endDate.set(newDate);
             }
 
-            // if error is still not correct after the fifth iteration, display message
+            // if error is still not correct after the last iteration, display message
             if (i === 5) {
                 error.set('please select a new end date.');
             }
@@ -142,7 +145,7 @@
 
         // get prices for each date in dateList
         for (const date of $dateList) {
-            $priceList.push(parseFloat($timeSeriesDaily[date]["4. close"]));
+            $priceList.push(parseFloat($timeSeriesDaily[date]["5. adjusted close"]));
         }
 
         // set initial price and amount
@@ -249,6 +252,9 @@
         <thead>
             <tr>
                 <th class="labelTd" scope="col"><label for="ticker">Ticker</label></th>
+                <th class="labelTd" scope="col">
+                    <label for="longTerm">{$longTerm ? "long term (>140 days)" : "short term (<140 days)"}</label>
+                </th>
                 <th class="labelTd" scope="col"><label for="startDate">Start</label></th>
                 <th class="labelTd" scope="col"><label for="endDate">End</label></th>
             </tr>
@@ -256,19 +262,20 @@
         <tbody>
             <tr>
                 <td data-label="Ticker"><input type="text" id="ticker" bind:value={$ticker} placeholder="ex: AAPL" required ></td>
-                <td data-label="Start"><input type="date" id="startDate" bind:value={$startDate} min={minDate} max={yesterday} required ></td>
+                <td data-label="{$longTerm ? "long term (>140 days)" : "short term (<140 days)"}"><Switch id="longTerm" bind:checked={$longTerm}/></td>
+                <td data-label="Start"><input type="date" id="startDate" bind:value={$startDate} min={$longTerm ? longDate : shortDate} max={yesterday} required ></td>
                 <td data-label="End"><input type="date" id="endDate" bind:value={$endDate} min={$startDate} max={yesterday} required></td>
             </tr>
             <tr>
                 <th colspan="2"><label for="buyThreshold">Buy when market is down more than {buyThreshold}%</label></th>
-                <td colspan="1"><input type="range" min="-10" max="0" step='.5' id="buyThreshold" bind:value={buyThreshold} required></td>
+                <td colspan="2"><input type="range" min="-10" max="0" step='.5' id="buyThreshold" bind:value={buyThreshold} required></td>
             </tr>
             <tr>
                 <th colspan="2"><label for="sellThreshold">Sell when market is up more than {sellThreshold}%</label></th>
-                <td colspan="1"><input type="range" min="0" max="10" step='.5' id="sellThreshold" bind:value={sellThreshold} required></td>
+                <td colspan="2"><input type="range" min="0" max="10" step='.5' id="sellThreshold" bind:value={sellThreshold} required></td>
             </tr> 
             <tr id="submitRow">
-                <td colspan="3"><button type="submit">SUBMIT</button></td>
+                <td colspan="4"><button type="submit">SUBMIT</button></td>
             </tr>
         </tbody>
     </table>
@@ -339,7 +346,7 @@
         text-align: center;
     }
     table th {
-        font-size: .85em;
+        font-size: .7em;
         letter-spacing: .1em;
         text-transform: uppercase;
     }

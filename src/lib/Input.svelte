@@ -273,11 +273,11 @@
                 <td data-label="End"><input type="date" id="endDate" bind:value={$endDate} min={$startDate} max={yesterday} required></td>
             </tr>
             <tr>
-                <th colspan="2"><label for="buyThreshold">Buy when market is down more than {buyThreshold}%</label></th>
+                <th colspan="2"><label for="buyThreshold">Buy when price is down more than {buyThreshold}%</label></th>
                 <td colspan="1"><input type="range" min="-10" max="0" step='.5' id="buyThreshold" bind:value={buyThreshold} required></td>
             </tr>
             <tr>
-                <th colspan="2"><label for="sellThreshold">Sell when market is up more than {sellThreshold}%</label></th>
+                <th colspan="2"><label for="sellThreshold">Sell when price is up more than {sellThreshold}%</label></th>
                 <td colspan="1"><input type="range" min="0" max="10" step='.5' id="sellThreshold" bind:value={sellThreshold} required></td>
             </tr> 
             <tr id="submitRow">

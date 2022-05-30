@@ -1,5 +1,5 @@
 <script>
-    import { apiData, dateList, endDate, endPrice, error, longTerm, metadata, priceList, rateOfReturn, startDate, startPrice, submitted, success, symbol, ticker, timeSeriesDaily, tradeList } from '../stores';
+    import { apiData, dateList, endDate, endPrice, error, metadata, priceList, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, ticker, timeSeriesDaily, tradeList, volList } from '../stores';
 
     // import API key, assign correctly depending on environment
     import { AV_API_KEY } from '$lib/env';
@@ -10,14 +10,29 @@
         avApiKey = process.env.AV_API_KEY;
     }
 
-    //set default percentages for buy/sell thresholds
+    const strategies = {
+        'types': ['Price','Volume'],
+    }
+    strategy.set({
+        'type': 'Price'
+    });
+
+    // set default percentages for buy/sell thresholds
     let sellThreshold = 1;
     let buyThreshold = -1;
+
+    // set longTerm default timeframe
+    let longTerm = false;
 
     // calculate dates
     let yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     yesterday = yesterday.toISOString().split("T")[0];
+    endDate.set(yesterday);
+    let calcStartDate = new Date()
+    calcStartDate.setDate(calcStartDate.getDate() -30);
+    calcStartDate = calcStartDate.toISOString().split("T")[0];
+    startDate.set(calcStartDate);
     let shortDate = new Date();
     shortDate.setDate(shortDate.getDate() - 140);
     shortDate = shortDate.toISOString().split("T")[0];
@@ -25,7 +40,7 @@
 
     // request data from alpha vantage api
     async function getPrices() {
-        fetch(`https://alpha-vantage.p.rapidapi.com/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${$ticker.trim()}&outputsize=${$longTerm ? 'full' : 'compact'}&datatype=json`, {
+        fetch(`https://alpha-vantage.p.rapidapi.com/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${$ticker.trim()}&outputsize=${longTerm ? 'full' : 'compact'}&datatype=json`, {
             method: 'GET',
             headers: {
                 'X-RapidAPI-Host': 'alpha-vantage.p.rapidapi.com',
@@ -132,8 +147,9 @@
         // empty out price and trade lists in case of multiple submissions
         priceList.set([]);
         tradeList.set([]);
+        volList.set([]);
 
-        // calculate rate of return based on start and end date closing price
+        // calculate buy and hold rate of return based on start and end date closing price
         $rateOfReturn = round(($endPrice-$startPrice)/$startPrice*100, 2);
 
         // get dates from start+1 to end
@@ -144,17 +160,27 @@
         // get prices for each date in dateList
         for (const date of $dateList) {
             $priceList.push(parseFloat($timeSeriesDaily[date]["5. adjusted close"]));
+            // if volume strategy is selected
+            if($strategy.type === 'Volume') {
+                $volList.push(parseFloat($timeSeriesDaily[date]["6. volume"]));
+            }
         }
 
         // set initial price and amount
         let previousClose = $priceList[0];
         let amount = $priceList[0];
+        let previousVolume;
+        if($strategy.type === 'Volume'){
+            previousVolume = $volList[0];
+            console.log(previousVolume)
+        }
+        
 
         // always invested for the first day at least
         let invested = true;
 
-        // set counter to iterate through dates simultaneously
-        let dateCounter = 1;
+        // set counter
+        let counter = 1;
 
         // for each price in priceList
         for (const price of $priceList.slice(1)) {
@@ -162,25 +188,37 @@
             let trade = {};
 
             // set trade date and increment counter for next round, set closing prices
-            trade.date = $dateList[dateCounter];
-            dateCounter++;
+            trade.date = $dateList[counter];
             trade.previousClose = previousClose;
             trade.todayClose = price;
+            if($strategy.type === 'Volume') {
+                trade.todayVolume = $volList[counter];
+                trade.previousVolume = previousVolume;
+            }
+            counter++;
 
             // calculate percentage change in closing prices, store rounded version in trade object
-            let percentChange = (price-previousClose)/previousClose*100;
-            trade.percentChange = round(percentChange, 2);
-
+            let percentChangePrice = (price-previousClose)/previousClose*100;
+            trade.percentChangePrice = round(percentChangePrice, 2);
+            let percentChangeVol;
+            if ($strategy.type === 'Volume') {
+                percentChangeVol = (trade.todayVolume-previousVolume)/previousVolume*100;
+                trade.percentChangeVol = round(percentChangeVol, 2);
+            }
+            
             // store whether or not amount is currently in or out of the market
             trade.invested = invested;
 
             // if invested, update amount accordingly
             if (invested) {
-                amount = amount * (1+(percentChange/100));
+                amount = amount * (1+(percentChangePrice/100));
             }
 
             // log rounded version of amount into trade object, use non rounded for calculation
             trade.amount = round(amount, 2);
+
+            // trade based on the strategy selected
+            let percentChange = $strategy.type === 'Volume' ? percentChangeVol : percentChangePrice;
 
             // outcome logic, toggle invested on buys and sells, update trade.outcome
             if (percentChange > sellThreshold) {
@@ -207,6 +245,9 @@
 
             // set previous close to price to use in next iteration
             previousClose = price;
+            if ($strategy.type === 'Volume') {
+                previousVolume = trade.todayVolume;
+            }
 
             // push trade object to tradeList when there is a buy or sell, tradeList is displayed to the user
             if (trade.outcome === 'BUY' || trade.outcome === 'SELL') {
@@ -238,7 +279,7 @@
 
     // triggers API call and caculations, submitted controls loading logic, reset error store
     function handleSubmit() {
-        // check if compact or full request should be made, set $longTerm accordingly
+        // check if compact or full request should be made, set longTerm accordingly
         let checkStartDate = $startDate.split('-');
         let checkShortDate = shortDate.split('-');
         if (
@@ -246,14 +287,21 @@
             ((checkStartDate[0] === checkShortDate[0]) && (checkStartDate[1] < checkShortDate[1])) ||
             ((checkStartDate[0] === checkShortDate[0]) && (checkStartDate[1] === checkShortDate[1]) && (checkStartDate[2] < checkShortDate[2]))
             ) {
-                longTerm.set(true);
+                longTerm = true;
         } else {
-            longTerm.set(false);
+            longTerm = false;
         }
         getPrices();
         submitted.set(true);
         success.set(false);
         error.set('');
+    }
+
+    // resets when user changes strategies
+    function changeStrategy() {
+        submitted.set(false);
+        buyThreshold = -1;
+        sellThreshold = 1;
     }
 </script>
 
@@ -264,6 +312,7 @@
                 <th class="labelTd" scope="col"><label for="ticker">Ticker</label></th>
                 <th class="labelTd" scope="col"><label for="startDate">Start</label></th>
                 <th class="labelTd" scope="col"><label for="endDate">End</label></th>
+                <th class="labelTd" scope="col"><label for="endDate">Strategy</label></th>
             </tr>
         </thead>
         <tbody>
@@ -271,17 +320,23 @@
                 <td data-label="Ticker"><input type="text" id="ticker" bind:value={$ticker} placeholder="ex: AAPL" required ></td>
                 <td data-label="Start"><input type="date" id="startDate" bind:value={$startDate} min={longDate} max={yesterday} required ></td>
                 <td data-label="End"><input type="date" id="endDate" bind:value={$endDate} min={$startDate} max={yesterday} required></td>
+                <td data-label="Strategy">
+                    <select id="strategy" bind:value={$strategy.type} on:change={changeStrategy} required>
+                        {#each strategies.types as opt}
+                            <option value={opt}>{opt}</option>
+                        {/each}
+                </td>
             </tr>
             <tr>
-                <th colspan="2"><label for="buyThreshold">Buy when price is down more than {buyThreshold}%</label></th>
-                <td colspan="1"><input type="range" min="-10" max="0" step='.5' id="buyThreshold" bind:value={buyThreshold} required></td>
+                <th colspan="2"><label for="buyThreshold">Buy when {$strategy.type} is down more than {buyThreshold}%</label></th>
+                <td colspan="2"><input type="range" min={$strategy.type === 'Volume' ? "-50" : "-10"} max="0" step='.5' id="buyThreshold" bind:value={buyThreshold} required></td>
             </tr>
             <tr>
-                <th colspan="2"><label for="sellThreshold">Sell when price is up more than {sellThreshold}%</label></th>
-                <td colspan="1"><input type="range" min="0" max="10" step='.5' id="sellThreshold" bind:value={sellThreshold} required></td>
+                <th colspan="2"><label for="sellThreshold">Sell when {$strategy.type} is up more than {sellThreshold}%</label></th>
+                <td colspan="2"><input type="range" min="0" max={$strategy.type === 'Volume' ? "50" : "10"} step='.5' id="sellThreshold" bind:value={sellThreshold} required></td>
             </tr> 
             <tr id="submitRow">
-                <td colspan="3"><button type="submit">SUBMIT</button></td>
+                <td colspan="4"><button type="submit">SUBMIT</button></td>
             </tr>
         </tbody>
     </table>

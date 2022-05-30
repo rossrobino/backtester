@@ -1,5 +1,5 @@
 <script>
-    import { endDate, endPrice, error, rateOfReturn, startDate, startPrice, submitted, success, symbol, tradeList } from '../stores';
+    import { endDate, endPrice, error, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, tradeList } from '../stores';
 
     /*
         round function from:
@@ -37,7 +37,7 @@
                         <td data-label="Return">{$rateOfReturn}%</td>
                     </tr>
                     <tr>
-                        <td data-label="Strategy">Price Volatility</td>
+                        <td data-label="Strategy">Volatility</td>
                         <td data-label='{$startDate}'>{round($startPrice,2)}</td>
                         <td data-label='{$endDate}'>{$tradeList[$tradeList.length-1].amount}</td>
                         <td data-label="Return">{round((($tradeList[$tradeList.length-1].amount)-$startPrice)/$startPrice*100, 2)}%</td>
@@ -49,9 +49,16 @@
                 <thead>
                     <tr>
                         <th scope="col">Date</th>
-                        <th scope="col">Previous Day Close</th>
-                        <th scope="col">Close</th>
-                        <th scope="col">Change</th>
+                        {#if ($strategy.type === 'Price')}
+                            <th scope="col">Previous Day Close</th>
+                            <th scope="col">Close</th>
+                        {/if}
+                        <th scope="col">Price Change</th>
+                        {#if ($strategy.type === 'Volume')}
+                            <th scope="col">Previous Day Volume</th>
+                            <th scope="col">Volume</th>
+                            <th scope="col">Volume Change</th>
+                        {/if}
                         <th scope="col">Amount</th>
                         <th scope="col">Action</th>
                     </tr>
@@ -61,9 +68,17 @@
                     {#each $tradeList as trade}
                         <tr>
                             <td data-label="Date">{trade.date}</td>
-                            <td data-label="Previous Day Close">{round(trade.previousClose,2)}</td>
-                            <td data-label="Close">{round(trade.todayClose,2)}</td>
-                            <td data-label="Change">{trade.percentChange}%</td>
+                            {#if ($strategy.type === 'Price')}
+                                <td data-label="Previous Day Close">{round(trade.previousClose,2)}</td>
+                                <td data-label="Close">{round(trade.todayClose,2)}</td>
+                            {/if}
+                            <td data-label="Price Change">{trade.percentChangePrice}%</td>
+                            {#if ($strategy.type === 'Volume')}
+                                <td data-label="Previous Day Volume">{trade.previousVolume}</td>
+                                <td data-label="Volume">{trade.todayVolume}</td>
+                                <td data-label="Volume Change">{trade.percentChangeVol}%</td>
+                            {/if}
+                            
                             <td data-label="Amount">${trade.amount}</td>
                             <td data-label="Action">{trade.outcome}</td>
                         </tr>
@@ -78,8 +93,8 @@
     {/if}
 {:else}
     <p>
-        Compare buying and holding to trading on daily price volatility.
-        Backtracker is not meant to predict future performance.
+        Compare buying and holding to trading on volatility.
+        Backtester is not meant to predict future performance.
     </p>
 {/if}
 

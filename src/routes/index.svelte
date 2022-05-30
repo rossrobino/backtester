@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-	<title>Backtracker</title>
+	<title>Backtester</title>
 	<style>
 		@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap');
 		body {

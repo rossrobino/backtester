@@ -1,5 +1,5 @@
 <nav>
-    <h1>Backtracker</h1>
+    <h1>Backtester</h1>
 </nav>
 
 <style>

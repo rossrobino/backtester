@@ -83,8 +83,15 @@
         timeSeriesDaily.set(data[dataTitle]);
         symbol.set($metadata["2. Symbol"].toUpperCase());
 
+        let originalStartDate = $startDate;
+        let originalEndDate = $endDate;
+
         // check start date to see if the market was closed, correct accordingly
         for (let i = 0; i < 35; i++) {
+            if ($startDate === $endDate) {
+                startDate.set(originalStartDate);
+                break;
+            }
             try {
                 startPrice.set(Number($timeSeriesDaily[$startDate]["5. adjusted close"]));
                 break;
@@ -125,6 +132,10 @@
 
         // check start date to see if the market was closed, correct accordingly
         for (let i = 0; i < 35; i++) {
+            if ($startDate === $endDate) {
+                endDate.set(originalEndDate);
+                break;
+            }
             try {
                 endPrice.set(Number($timeSeriesDaily[$endDate]["5. adjusted close"]));
                 break;

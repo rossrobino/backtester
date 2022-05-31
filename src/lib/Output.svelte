@@ -45,17 +45,17 @@
                 </tbody>
             </table>
             <table>
-                <caption>Trade Summary</caption>
+                <caption>Summary</caption>
                 <thead>
                     <tr>
                         <th scope="col">Date</th>
-                        {#if ($strategy.type === 'Price')}
-                            <th scope="col">Previous Day Close</th>
+                        {#if ($strategy.type === 'PRICE')}
+                            <th scope="col">Previous Close</th>
                             <th scope="col">Close</th>
                         {/if}
                         <th scope="col">Price Change</th>
-                        {#if ($strategy.type === 'Volume')}
-                            <th scope="col">Previous Day Volume</th>
+                        {#if ($strategy.type === 'VOLUME')}
+                            <th scope="col">Previous Volume</th>
                             <th scope="col">Volume</th>
                             <th scope="col">Volume Change</th>
                         {/if}
@@ -68,13 +68,13 @@
                     {#each $tradeList as trade}
                         <tr>
                             <td data-label="Date">{trade.date}</td>
-                            {#if ($strategy.type === 'Price')}
-                                <td data-label="Previous Day Close">{round(trade.previousClose,2)}</td>
+                            {#if ($strategy.type === 'PRICE')}
+                                <td data-label="Previous Close">{round(trade.previousClose,2)}</td>
                                 <td data-label="Close">{round(trade.todayClose,2)}</td>
                             {/if}
                             <td data-label="Price Change">{trade.percentChangePrice}%</td>
-                            {#if ($strategy.type === 'Volume')}
-                                <td data-label="Previous Day Volume">{trade.previousVolume}</td>
+                            {#if ($strategy.type === 'VOLUME')}
+                                <td data-label="Previous Volume">{trade.previousVolume}</td>
                                 <td data-label="Volume">{trade.todayVolume}</td>
                                 <td data-label="Volume Change">{trade.percentChangeVol}%</td>
                             {/if}

@@ -11,10 +11,12 @@
     }
 
     const strategies = {
-        'types': ['Price','Volume'],
+        'types': ['PRICE','VOLUME'],
+        'timeFrames': ['DAILY', 'WEEKLY', 'MONTHLY']
     }
     strategy.set({
-        'type': 'Price'
+        'type': 'PRICE',
+        'timeFrame': 'DAILY'
     });
 
     // set default percentages for buy/sell thresholds
@@ -30,7 +32,7 @@
     yesterday = yesterday.toISOString().split("T")[0];
     endDate.set(yesterday);
     let calcStartDate = new Date()
-    calcStartDate.setDate(calcStartDate.getDate() -30);
+    calcStartDate.setDate(calcStartDate.getDate() - 30);
     calcStartDate = calcStartDate.toISOString().split("T")[0];
     startDate.set(calcStartDate);
     let shortDate = new Date();
@@ -40,18 +42,23 @@
 
     // request data from alpha vantage api
     async function getPrices() {
-        fetch(`https://alpha-vantage.p.rapidapi.com/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=${$ticker.trim()}&outputsize=${longTerm ? 'full' : 'compact'}&datatype=json`, {
+        // set url based on strategy selected
+        let url = `https://alpha-vantage.p.rapidapi.com/query?function=TIME_SERIES_${$strategy.timeFrame}_ADJUSTED&symbol=${$ticker.trim()}${$strategy.timeFrame==='DAILY' ? '&outputsize='+(longTerm ? 'full' : 'compact') : ''}&datatype=json`;
+        const options = {
             method: 'GET',
             headers: {
                 'X-RapidAPI-Host': 'alpha-vantage.p.rapidapi.com',
                 'X-RapidAPI-Key': avApiKey
             }
-        }).then(response => response.json())
+        }
+        fetch(url, options)
+        .then(response => response.json())
         .then(data => {
             setData(data);
             calculate();
             success.set(true);
-        }).catch(e => {
+        })
+        .catch(e => {
             error.set(e);
             console.log(e);
             return {};
@@ -62,11 +69,22 @@
     function setData(data) {
         apiData.set(data);
         metadata.set(data["Meta Data"]);
-        timeSeriesDaily.set(data["Time Series (Daily)"]);
+
+        // set dataTitle based on strategy
+        let dataTitle;
+        if ($strategy.timeFrame === 'DAILY') {
+            dataTitle = 'Time Series (Daily)';
+        } else if ($strategy.timeFrame === 'WEEKLY') {
+            dataTitle = 'Weekly Adjusted Time Series';
+        } else if ($strategy.timeFrame === 'MONTHLY') {
+            dataTitle = 'Monthly Adjusted Time Series';
+        }
+        
+        timeSeriesDaily.set(data[dataTitle]);
         symbol.set($metadata["2. Symbol"].toUpperCase());
 
         // check start date to see if the market was closed, correct accordingly
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 35; i++) {
             try {
                 startPrice.set(Number($timeSeriesDaily[$startDate]["5. adjusted close"]));
                 break;
@@ -100,13 +118,13 @@
             }
 
             // if error is still not correct after the fifth iteration, display message
-            if (i === 5) {
+            if (i === 34) {
                 error.set('please select a new start date.');
             }
         }
 
         // check start date to see if the market was closed, correct accordingly
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 35; i++) {
             try {
                 endPrice.set(Number($timeSeriesDaily[$endDate]["5. adjusted close"]));
                 break;
@@ -136,7 +154,7 @@
             }
 
             // if error is still not correct after the last iteration, display message
-            if (i === 5) {
+            if (i === 34) {
                 error.set('please select a new end date.');
             }
         }
@@ -161,7 +179,7 @@
         for (const date of $dateList) {
             $priceList.push(parseFloat($timeSeriesDaily[date]["5. adjusted close"]));
             // if volume strategy is selected
-            if($strategy.type === 'Volume') {
+            if($strategy.type === 'VOLUME') {
                 $volList.push(parseFloat($timeSeriesDaily[date]["6. volume"]));
             }
         }
@@ -170,7 +188,7 @@
         let previousClose = $priceList[0];
         let amount = $priceList[0];
         let previousVolume;
-        if($strategy.type === 'Volume'){
+        if($strategy.type === 'VOLUME'){
             previousVolume = $volList[0];
             console.log(previousVolume)
         }
@@ -191,7 +209,7 @@
             trade.date = $dateList[counter];
             trade.previousClose = previousClose;
             trade.todayClose = price;
-            if($strategy.type === 'Volume') {
+            if($strategy.type === 'VOLUME') {
                 trade.todayVolume = $volList[counter];
                 trade.previousVolume = previousVolume;
             }
@@ -201,7 +219,7 @@
             let percentChangePrice = (price-previousClose)/previousClose*100;
             trade.percentChangePrice = round(percentChangePrice, 2);
             let percentChangeVol;
-            if ($strategy.type === 'Volume') {
+            if ($strategy.type === 'VOLUME') {
                 percentChangeVol = (trade.todayVolume-previousVolume)/previousVolume*100;
                 trade.percentChangeVol = round(percentChangeVol, 2);
             }
@@ -218,7 +236,7 @@
             trade.amount = round(amount, 2);
 
             // trade based on the strategy selected
-            let percentChange = $strategy.type === 'Volume' ? percentChangeVol : percentChangePrice;
+            let percentChange = $strategy.type === 'VOLUME' ? percentChangeVol : percentChangePrice;
 
             // outcome logic, toggle invested on buys and sells, update trade.outcome
             if (percentChange > sellThreshold) {
@@ -245,7 +263,7 @@
 
             // set previous close to price to use in next iteration
             previousClose = price;
-            if ($strategy.type === 'Volume') {
+            if ($strategy.type === 'VOLUME') {
                 previousVolume = trade.todayVolume;
             }
 
@@ -312,7 +330,8 @@
                 <th class="labelTd" scope="col"><label for="ticker">Ticker</label></th>
                 <th class="labelTd" scope="col"><label for="startDate">Start</label></th>
                 <th class="labelTd" scope="col"><label for="endDate">End</label></th>
-                <th class="labelTd" scope="col"><label for="endDate">Strategy</label></th>
+                <th class="labelTd" scope="col"><label for="timeFrame">Time Frame</label></th>
+                <th class="labelTd" scope="col"><label for="strategy">Strategy</label></th>
             </tr>
         </thead>
         <tbody>
@@ -320,6 +339,12 @@
                 <td data-label="Ticker"><input type="text" id="ticker" bind:value={$ticker} placeholder="ex: AAPL" required ></td>
                 <td data-label="Start"><input type="date" id="startDate" bind:value={$startDate} min={longDate} max={yesterday} required ></td>
                 <td data-label="End"><input type="date" id="endDate" bind:value={$endDate} min={$startDate} max={yesterday} required></td>
+                <td data-label="Time Frame">
+                    <select id="timeFrame" bind:value={$strategy.timeFrame} required>
+                        {#each strategies.timeFrames as opt}
+                            <option value={opt}>{opt}</option>
+                        {/each}
+                </td>
                 <td data-label="Strategy">
                     <select id="strategy" bind:value={$strategy.type} on:change={changeStrategy} required>
                         {#each strategies.types as opt}
@@ -328,15 +353,15 @@
                 </td>
             </tr>
             <tr>
-                <th colspan="2"><label for="buyThreshold">Buy when {$strategy.type} is down more than {buyThreshold}%</label></th>
-                <td colspan="2"><input type="range" min={$strategy.type === 'Volume' ? "-50" : "-10"} max="0" step='.5' id="buyThreshold" bind:value={buyThreshold} required></td>
+                <th colspan="3"><label for="buyThreshold">Buy when {$strategy.type} is down more than {buyThreshold}%</label></th>
+                <td colspan="2"><input type="range" min={$strategy.type === 'VOLUME' ? "-50" : "-10"} max="0" step='.5' id="buyThreshold" bind:value={buyThreshold} required></td>
             </tr>
             <tr>
-                <th colspan="2"><label for="sellThreshold">Sell when {$strategy.type} is up more than {sellThreshold}%</label></th>
-                <td colspan="2"><input type="range" min="0" max={$strategy.type === 'Volume' ? "50" : "10"} step='.5' id="sellThreshold" bind:value={sellThreshold} required></td>
+                <th colspan="3"><label for="sellThreshold">Sell when {$strategy.type} is up more than {sellThreshold}%</label></th>
+                <td colspan="2"><input type="range" min="0" max={$strategy.type === 'VOLUME' ? "50" : "10"} step='.5' id="sellThreshold" bind:value={sellThreshold} required></td>
             </tr> 
             <tr id="submitRow">
-                <td colspan="4"><button type="submit">SUBMIT</button></td>
+                <td colspan="5"><button type="submit">SUBMIT</button></td>
             </tr>
         </tbody>
     </table>

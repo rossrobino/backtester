@@ -451,11 +451,11 @@
                 <td data-label={buyUp ? 'Buy Up / Sell Down' : 'Buy Down / Sell Up'} colspan="2"><Switch bind:checked={buyUp} onChange={changeBuySell} /></td>
             </tr> 
             <tr>
-                <th colspan="3"><label for="buyThreshold">Buy when {$strategy.type} is {buyUp ? 'up' : 'down'} more than {buyThreshold}%</label></th>
+                <th colspan="3"><label for="buyThreshold">Buy when {$strategy.type} change is {buyUp ? 'greater' : 'less'} than {buyThreshold}%</label></th>
                 <td colspan="2"><input type="range" min={rangeMin} max="{rangeMax}" step='.5' id="buyThreshold" bind:value={buyThreshold} on:change={changeBuyThreshold} required></td>
             </tr>
             <tr>
-                <th colspan="3"><label for="sellThreshold">Sell when {$strategy.type} is {buyUp ? 'down' : 'up'} more than {sellThreshold}%</label></th>
+                <th colspan="3"><label for="sellThreshold">Sell when {$strategy.type} change is {buyUp ? 'less' : 'greater'} than {sellThreshold}%</label></th>
                 <td colspan="2"><input type="range" min="{rangeMin}" max={rangeMax} step='.5' id="sellThreshold" bind:value={sellThreshold} on:change={changeSellThreshold} required></td>
             </tr> 
             <tr id="submitRow">

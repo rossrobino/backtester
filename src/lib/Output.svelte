@@ -1,6 +1,8 @@
 <script>
     import { endDate, endPrice, error, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, tradeList } from '../stores';
+    import Switch from '$lib/Switch.svelte';
 
+    let showAllData = false;
     /*
         round function from:
         Rounding Decimals in JavaScript
@@ -46,14 +48,22 @@
             </table>
             <table>
                 <caption>Summary</caption>
+                    <tr>
+                        <th class='hidden' colspan="4"></th>
+                        <th class='hidden'>{showAllData ? 'All' : 'Trades'}</th>
+                        <td data-label="{showAllData ? 'All' : 'Trades'}"><Switch bind:checked={showAllData} /></td>
+                    </tr>  
+            </table>
+            <table>
                 <thead>
                     <tr>
                         <th scope="col">Date</th>
                         {#if ($strategy.type === 'PRICE')}
                             <th scope="col">Previous Close</th>
                             <th scope="col">Close</th>
+                            <th scope="col">Price Change</th>
                         {/if}
-                        <th scope="col">Price Change</th>
+                        
                         {#if ($strategy.type === 'VOLUME')}
                             <th scope="col">Previous Volume</th>
                             <th scope="col">Volume</th>
@@ -66,22 +76,41 @@
                 <tbody>
                     <!-- loops through tradeList of trades and creates a new row for each -->
                     {#each $tradeList as trade}
-                        <tr>
-                            <td data-label="Date">{trade.date}</td>
-                            {#if ($strategy.type === 'PRICE')}
-                                <td data-label="Previous Close">{round(trade.previousClose,2)}</td>
-                                <td data-label="Close">{round(trade.todayClose,2)}</td>
+                        {#if (showAllData)}
+                            <tr>
+                                <td data-label="Date">{trade.date}</td>
+                                {#if ($strategy.type === 'PRICE')}
+                                    <td data-label="Previous Close">{round(trade.previousClose,2)}</td>
+                                    <td data-label="Close">{round(trade.todayClose,2)}</td>
+                                    <td data-label="Price Change">{trade.percentChangePrice}%</td>
+                                {/if}
+                                {#if ($strategy.type === 'VOLUME')}
+                                    <td data-label="Previous Volume">{trade.previousVolume}</td>
+                                    <td data-label="Volume">{trade.todayVolume}</td>
+                                    <td data-label="Volume Change">{trade.percentChangeVol}%</td>
+                                {/if}
+                                <td data-label="Amount">${trade.amount}</td>
+                                <td data-label="Action">{trade.outcome}</td>
+                            </tr>
+                        {:else}
+                            {#if (trade.outcome === 'BUY' || trade.outcome === 'SELL')}
+                                <tr>
+                                    <td data-label="Date">{trade.date}</td>
+                                    {#if ($strategy.type === 'PRICE')}
+                                        <td data-label="Previous Close">{round(trade.previousClose,2)}</td>
+                                        <td data-label="Close">{round(trade.todayClose,2)}</td>
+                                        <td data-label="Price Change">{trade.percentChangePrice}%</td>
+                                    {/if}
+                                    {#if ($strategy.type === 'VOLUME')}
+                                        <td data-label="Previous Volume">{trade.previousVolume}</td>
+                                        <td data-label="Volume">{trade.todayVolume}</td>
+                                        <td data-label="Volume Change">{trade.percentChangeVol}%</td>
+                                    {/if}
+                                    <td data-label="Amount">${trade.amount}</td>
+                                    <td data-label="Action">{trade.outcome}</td>
+                                </tr>
                             {/if}
-                            <td data-label="Price Change">{trade.percentChangePrice}%</td>
-                            {#if ($strategy.type === 'VOLUME')}
-                                <td data-label="Previous Volume">{trade.previousVolume}</td>
-                                <td data-label="Volume">{trade.todayVolume}</td>
-                                <td data-label="Volume Change">{trade.percentChangeVol}%</td>
-                            {/if}
-                            
-                            <td data-label="Amount">${trade.amount}</td>
-                            <td data-label="Action">{trade.outcome}</td>
-                        </tr>
+                        {/if}
                     {/each}
                 </tbody>
             </table>
@@ -145,7 +174,7 @@
         table caption {
             font-size: 1.3em;
         }
-        table thead {
+        table thead, .hidden {
             border: none;
             clip: rect(0 0 0 0);
             height: 1px;

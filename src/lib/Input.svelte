@@ -1,5 +1,6 @@
 <script>
     import { apiData, dateList, endDate, endPrice, error, metadata, priceList, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, ticker, timeSeriesDaily, tradeList, volList } from '../stores';
+    import Switch from './Switch.svelte';
 
     // import API key, assign correctly depending on environment
     import { AV_API_KEY } from '$lib/env';
@@ -13,15 +14,61 @@
     const strategies = {
         'types': ['PRICE','VOLUME'],
         'timeFrames': ['DAILY', 'WEEKLY', 'MONTHLY']
-    }
+    };
     strategy.set({
         'type': 'PRICE',
         'timeFrame': 'DAILY'
     });
 
+    let buyUp = false;
+
+
     // set default percentages for buy/sell thresholds
-    let sellThreshold = 1;
-    let buyThreshold = -1;
+    let sellThreshold;
+    let buyThreshold;
+    let sellMin;
+    let sellMax;
+    let buyMin;
+    let buyMax;
+    
+    function setThresholds() {
+        if (buyUp) {
+            if ($strategy.type === 'VOLUME'){
+                sellThreshold = -5;
+                buyThreshold = 5;
+                sellMin = -50;
+                sellMax = 0;
+                buyMin = 0;
+                buyMax = 50;
+            } else {
+                sellThreshold = -1;
+                buyThreshold = 1;
+                sellMin = -10;
+                sellMax = 0;
+                buyMin = 0;
+                buyMax = 10;
+            } 
+        } else {
+            if ($strategy.type === 'VOLUME'){
+                sellThreshold = 5;
+                buyThreshold = -5;
+                sellMin = 0;
+                sellMax = 50;
+                buyMin = -50;
+                buyMax = 0;
+            } else {
+                sellThreshold = 1;
+                buyThreshold = -1;
+                sellMin = 0;
+                sellMax = 10;
+                buyMin = -10;
+                buyMax = 0;
+            }
+        }
+    }
+    setThresholds();
+    
+
 
     // set longTerm default timeframe
     let longTerm = false;
@@ -250,38 +297,60 @@
             let percentChange = $strategy.type === 'VOLUME' ? percentChangeVol : percentChangePrice;
 
             // outcome logic, toggle invested on buys and sells, update trade.outcome
-            if (percentChange > sellThreshold) {
-                if (invested) {
-                    invested = false;
-                    trade.outcome = 'SELL';
+            if(!buyUp) {
+                if (percentChange > sellThreshold) {
+                    if (invested) {
+                        invested = false;
+                        trade.outcome = 'SELL';
+                    } else {
+                        trade.outcome = 'HOLD OUT';
+                    }
+                } else if (percentChange < buyThreshold) {
+                    if (invested) {
+                        trade.outcome = 'HOLD IN'
+                    } else {
+                        invested = true;
+                        trade.outcome = 'BUY';
+                    }
                 } else {
-                    trade.outcome = 'HOLD OUT';
-                }
-            } else if (percentChange < buyThreshold) {
-                if (invested) {
-                    trade.outcome = 'HOLD IN'
-                } else {
-                    invested = true;
-                    trade.outcome = 'BUY';
+                    if (invested) {
+                        trade.outcome = 'HOLD IN'
+                    } else {
+                        trade.outcome = 'HOLD OUT';
+                    }
                 }
             } else {
-                if (invested) {
-                    trade.outcome = 'HOLD IN'
+                if (percentChange > buyThreshold) {
+                    if (!invested) {
+                        invested = true;
+                        trade.outcome = 'BUY';
+                    } else {
+                        trade.outcome = 'HOLD IN';
+                    }
+                } else if (percentChange < sellThreshold) {
+                    if (!invested) {
+                        trade.outcome = 'HOLD OUT'
+                    } else {
+                        invested = false;
+                        trade.outcome = 'SELL';
+                    }
                 } else {
-                    trade.outcome = 'HOLD OUT';
+                    if (!invested) {
+                        trade.outcome = 'HOLD OUT'
+                    } else {
+                        trade.outcome = 'HOLD IN';
+                    }
                 }
             }
-
+            
             // set previous close to price to use in next iteration
             previousClose = price;
             if ($strategy.type === 'VOLUME') {
                 previousVolume = trade.todayVolume;
             }
 
-            // push trade object to tradeList when there is a buy or sell, tradeList is displayed to the user
-            if (trade.outcome === 'BUY' || trade.outcome === 'SELL') {
-                $tradeList.push(trade);
-            }
+            // push trade object to tradeList
+            $tradeList.push(trade);
         }
     }
 
@@ -329,8 +398,11 @@
     // resets when user changes strategies
     function changeStrategy() {
         submitted.set(false);
-        buyThreshold = -1;
-        sellThreshold = 1;
+        setThresholds();
+    }
+    function changeBuySell() {
+        buyUp = !buyUp;
+        setThresholds();
     }
 </script>
 
@@ -364,12 +436,16 @@
                 </td>
             </tr>
             <tr>
-                <th colspan="3"><label for="buyThreshold">Buy when {$strategy.type} is down more than {buyThreshold}%</label></th>
-                <td colspan="2"><input type="range" min={$strategy.type === 'VOLUME' ? "-50" : "-10"} max="0" step='.5' id="buyThreshold" bind:value={buyThreshold} required></td>
+                <th colspan="3" class='hidden'>{buyUp ? 'Buy Up / Sell Down' : 'Buy Down / Sell Up'}</th>
+                <td data-label={buyUp ? 'Buy Up / Sell Down' : 'Buy Down / Sell Up'} colspan="2"><Switch bind:checked={buyUp} onChange={changeBuySell} /></td>
+            </tr> 
+            <tr>
+                <th colspan="3"><label for="buyThreshold">Buy when {$strategy.type} is {buyUp ? 'up' : 'down'} more than {buyThreshold}%</label></th>
+                <td colspan="2"><input type="range" min={buyMin} max="{buyMax}" step='.5' id="buyThreshold" bind:value={buyThreshold} required></td>
             </tr>
             <tr>
-                <th colspan="3"><label for="sellThreshold">Sell when {$strategy.type} is up more than {sellThreshold}%</label></th>
-                <td colspan="2"><input type="range" min="0" max={$strategy.type === 'VOLUME' ? "50" : "10"} step='.5' id="sellThreshold" bind:value={sellThreshold} required></td>
+                <th colspan="3"><label for="sellThreshold">Sell when {$strategy.type} is {buyUp ? 'down' : 'up'} more than {sellThreshold}%</label></th>
+                <td colspan="2"><input type="range" min="{sellMin}" max={sellMax} step='.5' id="sellThreshold" bind:value={sellThreshold} required></td>
             </tr> 
             <tr id="submitRow">
                 <td colspan="5"><button type="submit">SUBMIT</button></td>
@@ -452,7 +528,7 @@
         table {
             border: 0;
         }
-        table thead {
+        table thead, .hidden {
             border: none;
             clip: rect(0 0 0 0);
             height: 1px;

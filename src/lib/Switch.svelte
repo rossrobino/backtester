@@ -32,7 +32,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgb(0, 90, 128);
+        background-color: rgb(112,105,253);
         -webkit-transition: 0.4s;
         transition: 0.4s;
         border-radius: 23px;
@@ -52,7 +52,7 @@
     }
   
     input:checked + .slider {
-        background-color: goldenrod;
+        background-color: rgb(252,191,84);
     }
   
     input:checked + .slider:before {

@@ -22,7 +22,7 @@
             No trades were completed.
         {:else}
             <table>
-                <caption>Comparison - {$symbol}</caption>
+                <caption>Comparison</caption>
                 <thead>
                     <tr>
                         <th scope="col">Strategy</th>
@@ -151,7 +151,7 @@
     table caption {
         font-size: 1.5em;
         margin: .75em 0 .75em;
-        color: rgb(0, 90, 128);
+        color: rgb(112,105,253);
     }
     table tr {
         background-color: #fdfdfd;

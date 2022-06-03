@@ -3,29 +3,22 @@
 </nav>
 
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap');
     h1 {
-        font-size: 5em;
+        font-size: 3em;
         color: rgb(255, 255, 255);
+        font-family: 'Ubuntu Mono', monospace;
     }
     nav {
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 6em;
+        height: 5em;
         text-align: center;
-        background-color: rgb(0, 90, 128);
+        background-color: rgb(112,105,253);
     }
 
     @media (max-width: 1007px) {
-        h1 {
-            font-size: 4em;
-        }
-        nav {
-            height: 5em;
-        }
-    }
-    
-    @media (max-width: 640px) {
         h1 {
             font-size: 3em;
         }

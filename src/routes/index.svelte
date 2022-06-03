@@ -6,10 +6,10 @@
 <svelte:head>
 	<title>Backtester</title>
 	<style>
-		@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap');
+		@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 		body {
 			margin: 0;
-			font-family: 'Ubuntu Mono', monospace;	
+			font-family: 'Roboto', sans-serif;
 		}
 	</style>
 </svelte:head>

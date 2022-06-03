@@ -1,6 +1,7 @@
 <script>
     import { apiData, dateList, endDate, endPrice, error, metadata, priceList, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, ticker, timeSeriesDaily, tradeList, volList } from '../stores';
     import Switch from '$lib/Switch.svelte';
+    import Range from '$lib/Range.svelte';
 
     // import API key, assign correctly depending on environment
     import { AV_API_KEY } from '$lib/env';
@@ -447,16 +448,51 @@
                 </td>
             </tr>
             <tr>
-                <th colspan="3" class='hidden'>{buyUp ? 'Buy Up / Sell Down' : 'Buy Down / Sell Up'}</th>
-                <td data-label={buyUp ? 'Buy Up / Sell Down' : 'Buy Down / Sell Up'} colspan="2"><Switch bind:checked={buyUp} onChange={changeBuySell} /></td>
+                <th colspan="2" class='hidden'>{buyUp ? 'Buy Up / Sell Down' : 'Buy Down / Sell Up'}</th>
+                <th class='hidden' colspan="1"></th>
+                <td data-label={buyUp ? 'Buy Up / Sell Down' : 'Buy Down / Sell Up'} colspan="2">
+                    <Switch bind:checked={buyUp} onChange={changeBuySell} />
+                </td>
             </tr> 
             <tr>
-                <th colspan="3"><label for="buyThreshold">Buy when {$strategy.type} change is {buyUp ? 'greater' : 'less'} than {buyThreshold}%</label></th>
-                <td colspan="2"><input type="range" min={rangeMin} max="{rangeMax}" step='.5' id="buyThreshold" bind:value={buyThreshold} on:change={changeBuyThreshold} required></td>
+                <th colspan="2">
+                    <label for="buyThreshold">Buy when {$strategy.type} change is {buyUp ? 'greater' : 'less'} than:</label>
+                </th>
+                <th colspan="1">{buyThreshold}%</th>
+                <td colspan="2">
+                    <Range 
+                        min="{rangeMin}" 
+                        max={rangeMax} 
+                        id="sellThreshold" 
+                        bind:value={buyThreshold} 
+                        onChange={changeBuyThreshold} 
+                        thumbColor='rgb(255,33,56)' 
+                        color1={buyUp ? '#ddd' : 'rgb(112,105,253)'} 
+                        color2={buyUp ? '#ddd' : 'rgb(255,33,56)'} 
+                        color3={buyUp ? 'rgb(255,33,56)' : '#ddd'} 
+                        color4={buyUp ? 'rgb(112,105,253)' : '#ddd'}
+                    />
+                </td>
             </tr>
             <tr>
-                <th colspan="3"><label for="sellThreshold">Sell when {$strategy.type} change is {buyUp ? 'less' : 'greater'} than {sellThreshold}%</label></th>
-                <td colspan="2"><input type="range" min="{rangeMin}" max={rangeMax} step='.5' id="sellThreshold" bind:value={sellThreshold} on:change={changeSellThreshold} required></td>
+                <th colspan="2">
+                    <label for="sellThreshold">Sell when {$strategy.type} change is {buyUp ? 'less' : 'greater'} than:</label>
+                </th>
+                <th colspan="1">{sellThreshold}%</th>
+                <td colspan="2">
+                    <Range 
+                        min="{rangeMin}" 
+                        max={rangeMax} 
+                        id="sellThreshold" 
+                        bind:value={sellThreshold} 
+                        onChange={changeSellThreshold} 
+                        thumbColor='rgb(255,33,56)' 
+                        color1={buyUp ? 'rgb(112,105,253)' : '#ddd'} 
+                        color2={buyUp ? 'rgb(255,33,56)' : '#ddd'} 
+                        color3={buyUp ? '#ddd' : 'rgb(255,33,56)'} 
+                        color4={buyUp ? '#ddd' : 'rgb(112,105,253)'}
+                    />
+                </td>
             </tr> 
             <tr id="submitRow">
                 <td colspan="5"><button type="submit">SUBMIT</button></td>
@@ -469,42 +505,10 @@
     button {
         width: 35%;
         height: 3em;
-        background-color: rgb(0, 90, 128);
+        background-color: rgb(112,105,253);
         color: white;
         border: none;
     }
-
-    /* 
-        range styles from:
-        How to Style Input Type Range in Chrome, Firefox, and IE
-        Brenna OBrien
-        5/26/22
-        https://brennaobrien.com/blog/2014/05/style-input-type-range-in-every-browser.html 
-    */
-    input[type=range]{
-        -webkit-appearance: none;
-        padding: 0;
-        width: 100%;
-    }
-    input[type=range]::-webkit-slider-runnable-track {
-        height: 5px;
-        background: #ddd;
-        border: none;
-        border-radius: 3px;
-    }
-    input[type=range]::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        border: none;
-        height: 16px;
-        width: 16px;
-        border-radius: 50%;
-        background: goldenrod;
-        margin-top: -6px;
-    }
-    input[type=range]:focus::-webkit-slider-runnable-track {
-        background: #ccc;
-    }
-
     /* 
         table styles from:
         Simple Responsive Table in CSS
@@ -530,9 +534,10 @@
         text-align: center;
     }
     table th {
-        font-size: .7em;
+        font-size: .8em;
         letter-spacing: .1em;
         text-transform: uppercase;
+        font-weight: normal;
     }
     
     @media (max-width: 640px) {
@@ -566,6 +571,9 @@
         }
         table td:last-child {
             border-bottom: 0;
+        }
+        table th {
+            font-size: .62em;
         }
     }
 </style>

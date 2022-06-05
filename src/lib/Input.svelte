@@ -91,9 +91,19 @@
         fetch(url, options)
         .then(response => response.json())
         .then(data => {
-            setData(data);
-            calculate();
-            success.set(true);
+            try {
+                setData(data);
+                calculate();
+                success.set(true);
+            } catch (e) {
+                if (data.message) {
+                    error.set('Too many requests. Please wait a minute and try again.');
+                } else {
+                    error.set('Sorry, the ticker you entered is invalid. Please update and try again.');
+                }
+                console.log(e);
+                console.log(data);
+            }
         })
         .catch(e => {
             error.set(e);
@@ -379,10 +389,10 @@
         } else {
             longTerm = false;
         }
+        error.set('');
         getPrices();
         submitted.set(true);
         success.set(false);
-        error.set('');
     }
 
     // resets when user changes strategies
@@ -525,7 +535,6 @@
         table-layout: fixed;
     }
     table tr {
-        background-color: #fdfdfd;
         border: 1px solid #ddd;
         padding: .35em;
     }

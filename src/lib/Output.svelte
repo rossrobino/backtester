@@ -116,7 +116,7 @@
             </table>
         {/if}
     {:else if ($error !== '')}
-        <p>Error- {$error}</p>
+        <p>{$error}</p>
     {:else}
         <p>Loading...</p>
     {/if}
@@ -154,7 +154,6 @@
         color: rgb(112,105,253);
     }
     table tr {
-        background-color: #fdfdfd;
         border: 1px solid #ddd;
         padding: .35em;
     }

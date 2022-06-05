@@ -22,8 +22,7 @@
     */
     let backgroundStyle;
     $: backgroundVal = (value-min)/(max-min)*100;
-    $: backgroundStyle = 'linear-gradient(to right, ' + color1 + ' 0%, ' + color2 + ' ' + backgroundVal + '%, ' + color3 + ' ' + backgroundVal + '%, ' + color4 + ' 100%)'
-
+    $: backgroundStyle = 'linear-gradient(to right, ' + color1 + ' 0%, ' + color2 + ' ' + backgroundVal + '%, ' + color3 + ' ' + backgroundVal + '%, ' + color4 + ' 100%)';
 </script>
 
 <input 

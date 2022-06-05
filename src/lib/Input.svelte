@@ -520,6 +520,11 @@
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
+        color: black;
+        background-color: white;
+    }
+    input[type='text'] {
+        color: black;
     }
     button {
         width: 35%;

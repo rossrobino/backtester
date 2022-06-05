@@ -512,6 +512,15 @@
 </form>
 
 <style>
+    input, select {
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        width: 8em;
+        height: 1.8em;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+    }
     button {
         width: 35%;
         height: 3em;

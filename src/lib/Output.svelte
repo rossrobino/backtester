@@ -20,7 +20,7 @@
 {#if ($submitted)}
     {#if ($success && $error === '')}
         {#if ($tradeList.length === 0)}
-            No trades were completed.
+            <p>No trades were completed.</p>
         {:else}
             <table>
                 <caption>Comparison</caption>
@@ -28,6 +28,7 @@
                     <tr>
                         <Chart /> 
                     </tr>
+                    <br>
                 </tbody>
             </table>
             <table>

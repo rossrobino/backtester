@@ -6,7 +6,7 @@
     export let id;
     export let onChange;
     export let thumbColor = '#aaa';
-    export let thumbDiameter = '1.75em';
+    export let thumbDiameter = '1.4em';
 
     // progress gradient colors from left to right
     export let color1 = '#ddd';

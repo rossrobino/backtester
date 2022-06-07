@@ -402,7 +402,9 @@
     }
     function changeBuySell() {
         buyUp = !buyUp;
-        setThresholds();
+        let temp = buyThreshold;
+        buyThreshold = sellThreshold;
+        sellThreshold = temp;
     }
     function changeBuyThreshold() {
         if (!buyUp) {

@@ -1,6 +1,7 @@
 <script>
     import { endDate, endPrice, error, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, tradeList } from '../stores';
     import Switch from '$lib/Switch.svelte';
+    import Chart from '$lib/Chart.svelte';
 
     let showAllData = false;
     /*
@@ -14,6 +15,8 @@
         return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
     }
 </script>
+
+<Chart /> 
 
 <!-- if statement manages the loading message -->
 {#if ($submitted)}

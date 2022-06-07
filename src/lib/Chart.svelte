@@ -14,6 +14,8 @@
     import Chart from 'chart.js/auto/auto.js';
     import { dateList, priceList, tradeList } from '../stores'
 
+    let width = window.width;
+
     let comparisonChart;
     const buyAndHoldData = [];
     const volData = [];
@@ -102,13 +104,17 @@
     onMount(()=> {
         const ctx = comparisonChart.getContext('2d');
         var myChart = new Chart(ctx, config);
-        window.scroll({
-            top: 350,
-            left: 0,
-            behavior:'smooth'
-        });
+        if (width < 640) {
+            window.scroll({
+                top: 594,
+                left: 0,
+                behavior:'smooth'
+            });
+        }
     });
 </script>
+
+<svelte:window bind:innerWidth={width} />
 
 <div>
     <canvas bind:this={comparisonChart} /> 

@@ -27,7 +27,7 @@
         } 
     }
 
-    const totalDuration = 2000;
+    const totalDuration = 3000;
     const delayBetweenPoints = totalDuration / buyAndHoldData.length;
     const previousY = (ctx) => ctx.index === 0 ? ctx.chart.scales.y.getPixelForValue(100) : ctx.chart.getDatasetMeta(ctx.datasetIndex).data[ctx.index - 1].getProps(['y'], true).y;
     const animation = {

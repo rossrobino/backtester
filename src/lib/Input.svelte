@@ -69,7 +69,7 @@
     yesterday = yesterday.toISOString().split("T")[0];
     endDate.set(yesterday);
     let calcStartDate = new Date()
-    calcStartDate.setDate(calcStartDate.getDate() - 30);
+    calcStartDate.setDate(calcStartDate.getDate() - 90);
     calcStartDate = calcStartDate.toISOString().split("T")[0];
     startDate.set(calcStartDate);
     let shortDate = new Date();

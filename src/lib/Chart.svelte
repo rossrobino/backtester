@@ -107,7 +107,6 @@
             left: 0,
             behavior:'smooth'
         });
-        comparisonChart.focus();
     });
 </script>
 

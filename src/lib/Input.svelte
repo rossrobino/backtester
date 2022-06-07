@@ -22,7 +22,7 @@
     });
 
     let buyUp = false;
-
+    let tickerInput;
 
     // set default percentages for buy/sell thresholds
     let sellThreshold;
@@ -377,6 +377,7 @@
 
     // triggers API call and caculations, submitted controls loading logic, reset error store
     function handleSubmit() {
+        tickerInput.blur();
         // check if compact or full request should be made, set longTerm accordingly
         let checkStartDate = $startDate.split('-');
         let checkShortDate = shortDate.split('-');
@@ -443,7 +444,7 @@
         </thead>
         <tbody>
             <tr>
-                <td data-label="Ticker"><input type="text" id="ticker" bind:value={$ticker} placeholder="ex: AAPL" required ></td>
+                <td data-label="Ticker"><input type="text" id="ticker" bind:value={$ticker} bind:this={tickerInput} placeholder="ex: AAPL" required ></td>
                 <td data-label="Start"><input type="date" id="startDate" bind:value={$startDate} min={longDate} max={yesterday} required ></td>
                 <td data-label="End"><input type="date" id="endDate" bind:value={$endDate} min={$startDate} max={yesterday} required></td>
                 <td data-label="Time Frame">

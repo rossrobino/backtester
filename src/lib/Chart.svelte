@@ -105,10 +105,8 @@
         const ctx = comparisonChart.getContext('2d');
         var myChart = new Chart(ctx, config);
         if (width < 640) {
-            window.scroll({
-                top: 594,
-                left: 0,
-                behavior:'smooth'
+            comparisonChart.scrollIntoView({
+                behavior: 'smooth'
             });
         }
     });

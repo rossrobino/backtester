@@ -23,8 +23,8 @@
             <p>No trades were completed.</p>
         {:else}
             <table>
-                <caption>Comparison</caption>
                 <tbody>
+                    <br>
                     <tr>
                         <Chart /> 
                     </tr>

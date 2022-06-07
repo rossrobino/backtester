@@ -16,8 +16,6 @@
     }
 </script>
 
-<Chart /> 
-
 <!-- if statement manages the loading message -->
 {#if ($submitted)}
     {#if ($success && $error === '')}
@@ -26,6 +24,13 @@
         {:else}
             <table>
                 <caption>Comparison</caption>
+                <tbody>
+                    <tr>
+                        <Chart /> 
+                    </tr>
+                </tbody>
+            </table>
+            <table>
                 <thead>
                     <tr>
                         <th scope="col">Strategy</th>

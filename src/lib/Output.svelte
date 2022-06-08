@@ -22,13 +22,12 @@
         {#if ($tradeList.length === 0)}
             <p>No trades were completed.</p>
         {:else}
-            <table>
+            <table id='chartTable'>
                 <caption>Comparison</caption>
                 <tbody>
                     <tr>
                         <Chart /> 
                     </tr>
-                    <br>
                 </tbody>
             </table>
             <table>
@@ -55,7 +54,7 @@
                     </tr>
                 </tbody>
             </table>
-            <table>
+            <table id="summaryTable">
                 <caption>Summary</caption>
                     <tr>
                         <th class='hidden' colspan="4"></th>
@@ -140,7 +139,7 @@
     p {
         margin: 1em;
         text-align: center;
-        font-size: .8em;
+        font-size: .7em;
     }
     /* 
         table styles from:
@@ -150,37 +149,45 @@
         https://codepen.io/AllThingsSmitty/pen/MyqmdM 
     */
     table {
-        border: 1px solid #ccc;
         border-collapse: collapse;
         margin: 0;
         padding: 0;
-        width: 100%;
+        width: 95vw;
         table-layout: fixed;
     }
     table caption {
-        font-size: 1.5em;
-        margin: .75em 0 .75em;
+        font-size: 1.2em;
+        margin: .5em 0;
         color: rgb(112,105,253);
     }
     table tr {
-        border: 1px solid #ddd;
-        padding: .35em;
+        border-bottom: 1px solid #ddd;
     }
     table th, table td {
-        padding: .625em;
+        padding: .5em;
         text-align: center;
     }
     table th {
-        font-size: .85em;
+        font-size: .75em;
         letter-spacing: .1em;
         text-transform: uppercase;
+        font-weight: normal;
     }
+    table td {
+        font-size: .7em;
+        color: #555;
+    }
+    #chartTable, #summaryTable {
+        margin-bottom: 1em;
+        margin-top: .7em;
+    }
+    #chartTable tr {
+        border-bottom: none;
+    }
+
     @media screen and (max-width: 640px) {
         table {
             border: 0;
-        }
-        table caption {
-            font-size: 1.3em;
         }
         table thead, .hidden {
             border: none;
@@ -193,24 +200,25 @@
             width: 1px;
         }
         table tr {
-            border-bottom: 3px solid #ddd;
             display: block;
             margin-bottom: .625em;
         }
         table td {
             border-bottom: 1px solid #ddd;
             display: block;
-            font-size: .8em;
             text-align: right;
         }
         table td::before {
             content: attr(data-label);
             float: left;
-            font-weight: bold;
             text-transform: uppercase;
+            color: black;
         }
         table td:last-child {
-            border-bottom: 0;
+            border-bottom: 2px solid #ddd;
+        }
+        #summaryTable {
+            margin-bottom: 0;
         }
     }
 </style>

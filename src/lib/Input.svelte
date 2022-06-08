@@ -1,3 +1,12 @@
+<!-- 
+        table styles from:
+        Simple Responsive Table in CSS
+        Matt Smith
+        5/26/22
+        https://codepen.io/AllThingsSmitty/pen/MyqmdM 
+ -->
+
+
 <script>
     import { apiData, dateList, endDate, endPrice, error, metadata, priceList, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, ticker, timeSeriesDaily, tradeList, volList } from '../stores';
     import Switch from '$lib/Switch.svelte';
@@ -444,16 +453,16 @@
         </thead>
         <tbody>
             <tr>
-                <td data-label="Ticker"><input type="text" id="ticker" bind:value={$ticker} bind:this={tickerInput} placeholder="ex: AAPL" required ></td>
-                <td data-label="Start"><input type="date" id="startDate" bind:value={$startDate} min={longDate} max={yesterday} required ></td>
-                <td data-label="End"><input type="date" id="endDate" bind:value={$endDate} min={$startDate} max={yesterday} required></td>
-                <td data-label="Time Frame">
+                <td class='inputTd' data-label="Ticker"><input type="text" id="ticker" bind:value={$ticker} bind:this={tickerInput} placeholder="ex: AAPL" required ></td>
+                <td class='inputTd' data-label="Start"><input type="date" id="startDate" bind:value={$startDate} min={longDate} max={yesterday} required ></td>
+                <td class='inputTd' data-label="End"><input type="date" id="endDate" bind:value={$endDate} min={$startDate} max={yesterday} required></td>
+                <td class='inputTd' data-label="Time Frame">
                     <select id="timeFrame" bind:value={$strategy.timeFrame} required>
                         {#each strategies.timeFrames as opt}
                             <option value={opt}>{opt}</option>
                         {/each}
                 </td>
-                <td data-label="Strategy">
+                <td class='inputTd' data-label="Strategy">
                     <select id="strategy" bind:value={$strategy.type} on:change={changeStrategy} required>
                         {#each strategies.types as opt}
                             <option value={opt}>{opt}</option>
@@ -472,7 +481,7 @@
                     <label for="buyThreshold">Buy when {$strategy.type} change is {buyUp ? 'greater' : 'less'} than:</label>
                 </th>
                 <th colspan="1">{buyThreshold}%</th>
-                <td colspan="2">
+                <td class='rangeTd' colspan="2">
                     <Range 
                         min="{rangeMin}" 
                         max={rangeMax} 
@@ -492,7 +501,7 @@
                     <label for="sellThreshold">Sell when {$strategy.type} change is {buyUp ? 'less' : 'greater'} than:</label>
                 </th>
                 <th colspan="1">{sellThreshold}%</th>
-                <td colspan="2">
+                <td class='rangeTd' colspan="2">
                     <Range 
                         min="{rangeMin}" 
                         max={rangeMax} 
@@ -515,6 +524,9 @@
 </form>
 
 <style>
+    form {
+        padding: 0.4em 2.5%;
+    }
     input, select {
         border: 1px solid #ccc;
         border-radius: 3px;
@@ -523,28 +535,21 @@
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
-        color: black;
+        color: #555;
         background-color: white;
-    }
-    input[type='text'] {
-        color: black;
     }
     button {
         width: 35%;
         height: 3em;
         background-color: rgb(112,105,253);
+        border-radius: 3px;
         color: white;
         border: none;
     }
-    /* 
-        table styles from:
-        Simple Responsive Table in CSS
-        Matt Smith
-        5/26/22
-        https://codepen.io/AllThingsSmitty/pen/MyqmdM 
-    */
+    button:hover {
+        color: #eee;
+    }
     table {
-        border: 1px solid #ccc;
         border-collapse: collapse;
         margin: 0;
         padding: 0;
@@ -552,21 +557,34 @@
         table-layout: fixed;
     }
     table tr {
-        border: 1px solid #ddd;
-        padding: .35em;
+        border-bottom: 1px solid #ddd;
+        padding: 0em;
     }
     table th, table td {
-        padding: .625em;
+        padding: .5em;
         text-align: center;
     }
     table th {
-        font-size: .8em;
+        font-size: .7em;
         letter-spacing: .1em;
         text-transform: uppercase;
         font-weight: normal;
     }
+    table thead tr {
+        border-bottom: none;
+        font-size: .7em;
+    }
+    .labelTd {
+        padding-top: 1em;
+    }
+    .inputTd {
+        padding-top: 0;
+    }
     
     @media (max-width: 640px) {
+        input, select {
+            width: 11em;
+        }
         table {
             border: 0;
         }
@@ -586,20 +604,26 @@
         table td {
             border-bottom: 1px solid #ddd;
             display: block;
-            font-size: .8em;
+            font-size: .7em;
             text-align: right;
         }
         table td::before {
             content: attr(data-label);
             float: left;
-            font-weight: bold;
             text-transform: uppercase;
         }
         table td:last-child {
             border-bottom: 0;
         }
         table th {
-            font-size: .62em;
+            font-size: .6em;
+            padding: .5em .5em 0 .5em;
+        }
+        .inputTd {
+            padding: .5em;
+        }
+        .rangeTd {
+            padding: .5em .5em .7em .5em;
         }
     }
 </style>

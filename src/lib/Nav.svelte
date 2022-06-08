@@ -13,17 +13,8 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 5em;
+        height: 4em;
         text-align: center;
         background-color: rgb(112,105,253);
-    }
-
-    @media (max-width: 1007px) {
-        h1 {
-            font-size: 3em;
-        }
-        nav {
-            height: 4em;
-        }
     }
 </style>

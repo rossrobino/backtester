@@ -6,7 +6,6 @@
         https://codepen.io/AllThingsSmitty/pen/MyqmdM 
  -->
 
-
 <script>
     import { apiData, dateList, endDate, endPrice, error, metadata, priceList, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, ticker, timeSeriesDaily, tradeList, volList } from '../stores';
     import Switch from '$lib/Switch.svelte';
@@ -67,8 +66,6 @@
     }
     setThresholds();
     
-
-
     // set longTerm default timeframe
     let longTerm = false;
 
@@ -76,14 +73,18 @@
     let yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     yesterday = yesterday.toISOString().split("T")[0];
+
     endDate.set(yesterday);
+
     let calcStartDate = new Date()
     calcStartDate.setDate(calcStartDate.getDate() - 90);
     calcStartDate = calcStartDate.toISOString().split("T")[0];
     startDate.set(calcStartDate);
+
     let shortDate = new Date();
     shortDate.setDate(shortDate.getDate() - 140);
     shortDate = shortDate.toISOString().split("T")[0];
+
     let longDate = "1999-11-01";
 
     // request data from alpha vantage api
@@ -124,20 +125,10 @@
     // set data from request to stores
     function setData(data) {
         apiData.set(data);
-        metadata.set(data["Meta Data"]);
-
-        // set dataTitle based on strategy
-        let dataTitle;
-        if ($strategy.timeFrame === 'DAILY') {
-            dataTitle = 'Time Series (Daily)';
-        } else if ($strategy.timeFrame === 'WEEKLY') {
-            dataTitle = 'Weekly Adjusted Time Series';
-        } else if ($strategy.timeFrame === 'MONTHLY') {
-            dataTitle = 'Monthly Adjusted Time Series';
-        }
+        metadata.set(data[Object.keys(data)[0]]);
         
-        timeSeriesDaily.set(data[dataTitle]);
-        symbol.set($metadata["2. Symbol"].toUpperCase());
+        timeSeriesDaily.set(data[Object.keys(data)[1]]);
+        symbol.set($metadata[Object.keys($metadata)[1]].toUpperCase());
 
         let originalStartDate = $startDate;
         let originalEndDate = $endDate;
@@ -480,7 +471,11 @@
                 <th colspan="2">
                     <label for="buyThreshold">Buy when {$strategy.type} change is {buyUp ? 'greater' : 'less'} than:</label>
                 </th>
-                <th colspan="1">{buyThreshold}%</th>
+                <th colspan="1">
+                    <div class='noWrap'>
+                        <input id='buySellInput' type='number' bind:value={buyThreshold} on:change={changeBuyThreshold} /> % 
+                    </div>
+                </th>
                 <td class='rangeTd' colspan="2">
                     <Range 
                         min="{rangeMin}" 
@@ -500,7 +495,11 @@
                 <th colspan="2">
                     <label for="sellThreshold">Sell when {$strategy.type} change is {buyUp ? 'less' : 'greater'} than:</label>
                 </th>
-                <th colspan="1">{sellThreshold}%</th>
+                <th colspan="1">
+                    <div class='noWrap'>
+                        <input id='buySellInput' type='number' bind:value={sellThreshold} on:change={changeSellThreshold} /> % 
+                    </div>
+                </th>
                 <td class='rangeTd' colspan="2">
                     <Range 
                         min="{rangeMin}" 
@@ -530,7 +529,7 @@
     input, select {
         border: 1px solid #ccc;
         border-radius: 3px;
-        width: 8em;
+        width: 9em;
         height: 1.8em;
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
@@ -580,11 +579,16 @@
     .inputTd {
         padding-top: 0;
     }
+    #buySellInput {
+        width: 4em;
+        text-align: center;
+    }
+    .noWrap {
+        white-space: nowrap;
+        font-size: 1.2em;
+    }
     
     @media (max-width: 640px) {
-        input, select {
-            width: 11em;
-        }
         table {
             border: 0;
         }
@@ -616,7 +620,7 @@
             border-bottom: 0;
         }
         table th {
-            font-size: .6em;
+            font-size: .66em;
             padding: .5em .5em 0 .5em;
         }
         .inputTd {

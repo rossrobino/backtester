@@ -31,6 +31,8 @@
 
     let buyUp = false;
     let tickerInput;
+    let buyThresholdInput;
+    let sellThresholdInput;
 
     // set default percentages for buy/sell thresholds
     let sellThreshold;
@@ -378,6 +380,8 @@
     // triggers API call and caculations, submitted controls loading logic, reset error store
     function handleSubmit() {
         tickerInput.blur();
+        buyThresholdInput.blur();
+        sellThresholdInput.blur();
         // check if compact or full request should be made, set longTerm accordingly
         let checkStartDate = $startDate.split('-');
         let checkShortDate = shortDate.split('-');
@@ -473,7 +477,7 @@
                 </th>
                 <th colspan="1">
                     <div class='noWrap'>
-                        <input id='buySellInput' type='number' bind:value={buyThreshold} on:change={changeBuyThreshold} /> % 
+                        <input id='buySellInput' type='number' bind:value={buyThreshold} on:change={changeBuyThreshold} bind:this={buyThresholdInput} /> % 
                     </div>
                 </th>
                 <td class='rangeTd' colspan="2">
@@ -497,7 +501,7 @@
                 </th>
                 <th colspan="1">
                     <div class='noWrap'>
-                        <input id='buySellInput' type='number' bind:value={sellThreshold} on:change={changeSellThreshold} /> % 
+                        <input id='buySellInput' type='number' bind:value={sellThreshold} on:change={changeSellThreshold} bind:this={sellThresholdInput} /> % 
                     </div>
                 </th>
                 <td class='rangeTd' colspan="2">

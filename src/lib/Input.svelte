@@ -534,7 +534,7 @@
         border: 1px solid #ccc;
         border-radius: 3px;
         width: 9em;
-        height: 1.8em;
+        height: 1.9em;
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
@@ -612,7 +612,7 @@
         table td {
             border-bottom: 1px solid #ddd;
             display: block;
-            font-size: .7em;
+            font-size: .8em;
             text-align: right;
         }
         table td::before {
@@ -624,11 +624,11 @@
             border-bottom: 0;
         }
         table th {
-            font-size: .66em;
+            font-size: .7em;
             padding: .5em .5em 0 .5em;
         }
         .inputTd {
-            padding: .5em;
+            padding:  .55em 0 .55em .5em;
         }
         .rangeTd {
             padding: .5em .5em .7em .5em;

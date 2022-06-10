@@ -29,6 +29,7 @@
         'timeFrame': 'DAILY'
     });
 
+    let startInvested = false;
     let buyUp = false;
     let tickerInput;
     let buyThresholdInput;
@@ -255,7 +256,7 @@
         
 
         // always invested for the first day at least
-        let invested = true;
+        let invested = startInvested;
 
         // set counter
         let counter = 1;
@@ -465,12 +466,19 @@
                 </td>
             </tr>
             <tr>
-                <th colspan="2" class='hidden'>{buyUp ? 'Buy Up / Sell Down' : 'Buy Down / Sell Up'}</th>
+                <th colspan="2" class='hidden'>{startInvested ? 'Start Invested' : 'Start Not Invested'}</th>
                 <th class='hidden' colspan="1"></th>
-                <td data-label={buyUp ? 'Buy Up / Sell Down' : 'Buy Down / Sell Up'} colspan="2">
+                <td data-label={startInvested ? 'Start Invested' : 'Start Not Invested'} colspan="2">
+                    <Switch bind:checked={startInvested} />
+                </td>
+            </tr>
+            <tr>
+                <th colspan="2" class='hidden'>{buyUp ? 'Buy High / Sell Low' : 'Buy Low / Sell High'}</th>
+                <th class='hidden' colspan="1"></th>
+                <td data-label={buyUp ? 'Buy High / Sell Low' : 'Buy Low / Sell High'} colspan="2">
                     <Switch bind:checked={buyUp} onChange={changeBuySell} />
                 </td>
-            </tr> 
+            </tr>  
             <tr>
                 <th colspan="2">
                     <label for="buyThreshold">Buy when {$strategy.type} change is {buyUp ? 'greater' : 'less'} than:</label>

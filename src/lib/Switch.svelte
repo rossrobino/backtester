@@ -2,8 +2,8 @@
 
 <script>
     export let checked = false;
-    export let id;
-    export let onChange;
+    export let id = undefined;
+    export let onChange = undefined;
 </script>
 
 <label class="switch">

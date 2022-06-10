@@ -151,7 +151,8 @@
     }
     table {
         border-collapse: collapse;
-        width: 95vw;
+        width: 100%;
+        min-width: 0;
         table-layout: fixed;
         letter-spacing: .09rem;
         margin: 1rem;

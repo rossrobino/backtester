@@ -5,7 +5,7 @@
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap');
     h1 {
-        font-size: 3em;
+        font-size: 3rem;
         color: rgb(255, 255, 255);
         font-family: 'Ubuntu Mono', monospace;
     }
@@ -13,7 +13,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 4em;
+        height: 4rem;
         text-align: center;
         background-color: rgb(112,105,253);
     }

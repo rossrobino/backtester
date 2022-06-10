@@ -6,13 +6,13 @@
     export let id;
     export let onChange;
     export let thumbColor = '#aaa';
-    export let thumbDiameter = '1.4em';
+    export let thumbDiameter = '1.1rem';
 
     // progress gradient colors from left to right
-    export let color1 = '#ddd';
-    export let color2 = '#ddd';
-    export let color3 = '#ddd';
-    export let color4 = '#ddd';
+    export let color1 = '#ccc';
+    export let color2 = '#ccc';
+    export let color3 = '#ccc';
+    export let color4 = '#ccc';
 
     /* 
         left and right progress gradient colors
@@ -44,10 +44,10 @@
 <style>
     input {
         -webkit-appearance: none;
-        height: .75em;
+        height: .4rem;
         width: 100%;
         background: var(--backgroundStyle);
-        border-radius: 1em;
+        border-radius: 1rem;
     }
     input::-webkit-slider-thumb {
         -webkit-appearance: none;

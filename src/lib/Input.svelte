@@ -31,6 +31,7 @@
 
     let startInvested = false;
     let buyUp = false;
+    let more = false;
     let tickerInput;
     let buyThresholdInput;
     let sellThresholdInput;
@@ -434,17 +435,20 @@
             }
         } 
     }
+    function toggleMore() {
+        more = !more;
+    }
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
     <table>
         <thead>
             <tr>
-                <th class="labelTd" scope="col"><label for="ticker">Ticker</label></th>
-                <th class="labelTd" scope="col"><label for="startDate">Start</label></th>
-                <th class="labelTd" scope="col"><label for="endDate">End</label></th>
-                <th class="labelTd" scope="col"><label for="timeFrame">Time Frame</label></th>
-                <th class="labelTd" scope="col"><label for="strategy">Strategy</label></th>
+                <th scope="col"><label for="ticker">Ticker</label></th>
+                <th scope="col"><label for="startDate">Start</label></th>
+                <th scope="col"><label for="endDate">End</label></th>
+                <th scope="col"><label for="timeFrame">Time Frame</label></th>
+                <th scope="col"><label for="strategy">Strategy</label></th>
             </tr>
         </thead>
         <tbody>
@@ -466,13 +470,6 @@
                 </td>
             </tr>
             <tr>
-                <th colspan="2" class='hidden'>{startInvested ? 'Start Invested' : 'Start Not Invested'}</th>
-                <th class='hidden' colspan="1"></th>
-                <td data-label={startInvested ? 'Start Invested' : 'Start Not Invested'} colspan="2">
-                    <Switch bind:checked={startInvested} />
-                </td>
-            </tr>
-            <tr>
                 <th colspan="2" class='hidden'>{buyUp ? 'Buy High / Sell Low' : 'Buy Low / Sell High'}</th>
                 <th class='hidden' colspan="1"></th>
                 <td data-label={buyUp ? 'Buy High / Sell Low' : 'Buy Low / Sell High'} colspan="2">
@@ -480,10 +477,10 @@
                 </td>
             </tr>  
             <tr>
-                <th colspan="2">
-                    <label for="buyThreshold">Buy when {$strategy.type} change is {buyUp ? 'greater' : 'less'} than:</label>
+                <th colspan="2" class='buySellLabelTh'>
+                    <label for="buyThreshold">Buy when {$strategy.type.toLowerCase()} change is {buyUp ? 'greater' : 'less'} than:</label>
                 </th>
-                <th colspan="1">
+                <th colspan="1" class='buySellInputTh'>
                     <div class='noWrap'>
                         <input id='buySellInput' type='number' bind:value={buyThreshold} on:change={changeBuyThreshold} bind:this={buyThresholdInput} /> % 
                     </div>
@@ -497,17 +494,17 @@
                         onChange={changeBuyThreshold} 
                         thumbColor='rgb(255,33,56)' 
                         color1={buyUp ? '#ddd' : 'rgb(112,105,253)'} 
-                        color2={buyUp ? '#ddd' : 'rgb(255,33,56)'} 
-                        color3={buyUp ? 'rgb(255,33,56)' : '#ddd'} 
+                        color2={buyUp ? '#ccc' : 'rgb(255,33,56)'} 
+                        color3={buyUp ? 'rgb(255,33,56)' : '#ccc'} 
                         color4={buyUp ? 'rgb(112,105,253)' : '#ddd'}
                     />
                 </td>
             </tr>
             <tr>
-                <th colspan="2">
-                    <label for="sellThreshold">Sell when {$strategy.type} change is {buyUp ? 'less' : 'greater'} than:</label>
+                <th colspan="2" class='buySellLabelTh'>
+                    <label for="sellThreshold">Sell when {$strategy.type.toLowerCase()} change is {buyUp ? 'less' : 'greater'} than:</label>
                 </th>
-                <th colspan="1">
+                <th colspan="1" class='buySellInputTh'>
                     <div class='noWrap'>
                         <input id='buySellInput' type='number' bind:value={sellThreshold} on:change={changeSellThreshold} bind:this={sellThresholdInput} /> % 
                     </div>
@@ -521,12 +518,34 @@
                         onChange={changeSellThreshold} 
                         thumbColor='rgb(255,33,56)' 
                         color1={buyUp ? 'rgb(112,105,253)' : '#ddd'} 
-                        color2={buyUp ? 'rgb(255,33,56)' : '#ddd'} 
-                        color3={buyUp ? '#ddd' : 'rgb(255,33,56)'} 
+                        color2={buyUp ? 'rgb(255,33,56)' : '#ccc'} 
+                        color3={buyUp ? '#ccc' : 'rgb(255,33,56)'} 
                         color4={buyUp ? '#ddd' : 'rgb(112,105,253)'}
                     />
                 </td>
             </tr> 
+            <tr id='more' on:click={toggleMore}>
+                <th colspan="2" class='hidden'>More Options</th>
+                <th class='hidden' colspan="1"></th>
+                <td data-label='More Options' colspan="2" >
+                    <span class='plusMinus'>
+                        {#if (more)}
+                            &minus;
+                        {:else}
+                            &plus;
+                        {/if}
+                    </span>
+                </td>
+            </tr>
+            {#if (more)}
+                <tr>
+                    <th colspan="2" class='hidden'>Start Invested</th>
+                    <th class='hidden' colspan="1"></th>
+                    <td data-label='Start Invested' colspan="2">
+                        <Switch bind:checked={startInvested} />
+                    </td>
+                </tr>
+            {/if}
             <tr id="submitRow">
                 <td colspan="5"><button type="submit">SUBMIT</button></td>
             </tr>
@@ -536,22 +555,23 @@
 
 <style>
     form {
-        padding: 0.4em 2.5%;
+        padding: 0.6rem 1rem;
     }
     input, select {
         border: 1px solid #ccc;
         border-radius: 3px;
-        width: 9em;
-        height: 1.9em;
+        width: 7.1rem;
+        height: 1.7rem;
         -moz-box-sizing: border-box;
         -webkit-box-sizing: border-box;
         box-sizing: border-box;
         color: #555;
         background-color: white;
+        font-size: .8rem;
     }
     button {
         width: 35%;
-        height: 3em;
+        height: 2.6rem;
         background-color: rgb(112,105,253);
         border-radius: 3px;
         color: white;
@@ -562,84 +582,85 @@
     }
     table {
         border-collapse: collapse;
-        margin: 0;
-        padding: 0;
         width: 100%;
         table-layout: fixed;
+        font-size: .8rem;
+        letter-spacing: .09rem;
     }
     table tr {
         border-bottom: 1px solid #ddd;
-        padding: 0em;
     }
     table th, table td {
-        padding: .5em;
+        padding: .5rem;
         text-align: center;
     }
     table th {
-        font-size: .7em;
-        letter-spacing: .1em;
-        text-transform: uppercase;
         font-weight: normal;
     }
     table thead tr {
         border-bottom: none;
-        font-size: .7em;
-    }
-    .labelTd {
-        padding-top: 1em;
     }
     .inputTd {
         padding-top: 0;
     }
     #buySellInput {
-        width: 4em;
+        width: 3rem;
         text-align: center;
     }
     .noWrap {
         white-space: nowrap;
-        font-size: 1.2em;
+    }
+    #more {
+        border-top: 2px solid #ddd;
+    }
+    #more:hover {
+        cursor: pointer;
+    }
+    .plusMinus {
+        font-size: 1.2rem;
+        height: 1.7rem;
+        display: block;
     }
     
     @media (max-width: 640px) {
-        table {
-            border: 0;
+        input, select {
+            width: 7.5rem;
         }
         table thead, .hidden {
-            border: none;
-            clip: rect(0 0 0 0);
             height: 1px;
-            margin: -1px;
             overflow: hidden;
-            padding: 0;
             position: absolute;
-            width: 1px;
         }
         table tr {
             display: block;
         }
         table td {
             border-bottom: 1px solid #ddd;
-            display: block;
-            font-size: .8em;
+            display: block;     
             text-align: right;
         }
         table td::before {
             content: attr(data-label);
             float: left;
-            text-transform: uppercase;
         }
         table td:last-child {
             border-bottom: 0;
         }
         table th {
-            font-size: .7em;
-            padding: .5em .5em 0 .5em;
+            padding-bottom: 0;
         }
         .inputTd {
-            padding:  .55em 0 .55em .5em;
+            padding:  .5rem;
         }
         .rangeTd {
-            padding: .5em .5em .7em .5em;
+            padding-bottom: .7rem;
+        }
+        /* .buySellInputTh {
+            display: block;
+            text-align: right;
+        } */
+        .buySellLabelTh {
+            text-align: left;
         }
     }
 </style>

@@ -1,3 +1,11 @@
+<!--
+    table styles from:
+    Simple Responsive Table in CSS
+    Matt Smith
+    5/26/22
+    https://codepen.io/AllThingsSmitty/pen/MyqmdM 
+-->
+
 <script>
     import { endDate, endPrice, error, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, tradeList } from '../stores';
     import Switch from '$lib/Switch.svelte';
@@ -137,67 +145,52 @@
 
 <style>
     p {
-        margin: 1em;
+        margin: 1rem;
         text-align: center;
-        font-size: .7em;
+        font-size: .8rem;
     }
-    /* 
-        table styles from:
-        Simple Responsive Table in CSS
-        Matt Smith
-        5/26/22
-        https://codepen.io/AllThingsSmitty/pen/MyqmdM 
-    */
     table {
         border-collapse: collapse;
-        margin: 0;
-        padding: 0;
         width: 95vw;
         table-layout: fixed;
+        letter-spacing: .09rem;
+        margin: 1rem;
     }
     table caption {
-        font-size: 1.2em;
-        margin: .5em 0;
+        font-size: 1.3rem;
+        margin: .6rem 0;
         color: rgb(112,105,253);
     }
     table tr {
         border-bottom: 1px solid #ddd;
     }
     table th, table td {
-        padding: .5em;
+        padding: .5rem;
         text-align: center;
     }
     table th {
-        font-size: .75em;
-        letter-spacing: .1em;
-        text-transform: uppercase;
-        font-weight: normal;
+        font-size: .9rem;
+        font-weight: normal; /* firefox */
     }
     table td {
-        font-size: .7em;
+        font-size: .8rem;
         color: #555;
+        letter-spacing: 0;
     }
     #chartTable, #summaryTable {
-        margin-bottom: 1em;
-        margin-top: .7em;
+        margin-bottom: 1rem;
+        margin-top: 1.5rem;
     }
     #chartTable tr {
         border-bottom: none;
     }
 
     @media screen and (max-width: 640px) {
-        table {
-            border: 0;
-        }
         table thead, .hidden {
-            border: none;
-            clip: rect(0 0 0 0);
             height: 1px;
-            margin: -1px;
             overflow: hidden;
             padding: 0;
             position: absolute;
-            width: 1px;
         }
         table tr {
             display: block;
@@ -210,8 +203,8 @@
         }
         table td::before {
             content: attr(data-label);
+            letter-spacing: .09rem;
             float: left;
-            text-transform: uppercase;
             color: black;
         }
         table td:last-child {

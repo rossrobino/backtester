@@ -68,7 +68,7 @@
                     borderColor: 'rgb(252,191,84)',
                     backgroundColor: 'white',
                     borderWidth: 4,
-                    radius: 1,
+                    radius: 0,
                     data: buyAndHoldData,
                     borderDash: [5, 5],
                 },
@@ -77,7 +77,7 @@
                     borderColor: 'rgb(112,105,253)',
                     backgroundColor: 'rgb(112,105,253)',
                     borderWidth: 4,
-                    radius: 1,
+                    radius: 0,
                     data: volData,
                 }
             ]

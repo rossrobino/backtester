@@ -13,7 +13,7 @@
     import Chart from '$lib/Chart.svelte';
 
     let showAllData = false;
-    const fadeParameters = { duration: 300 };
+    const fadeParameters = { duration: 400 };
     /*
         round function from:
         Rounding Decimals in JavaScript

@@ -8,6 +8,7 @@
 
 <script>
     import { apiData, dateList, endDate, endPrice, error, firstChartRender, loading, metadata, priceList, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, ticker, timeSeriesDaily, tradeList, volList } from '../stores';
+    import { fade } from 'svelte/transition'
     import Switch from '$lib/Switch.svelte';
     import Range from '$lib/Range.svelte';
 
@@ -37,10 +38,10 @@
     let sellThresholdInput;
 
     // set default percentages for buy/sell thresholds
-    let sellThreshold;
-    let buyThreshold;
-    let rangeMin;
-    let rangeMax;
+    let sellThreshold = 1;
+    let buyThreshold = -1;
+    let rangeMin = -10;
+    let rangeMax = 10;
     
     function setThresholds() {
         if ($strategy.type === 'VOLUME'){
@@ -50,25 +51,7 @@
             rangeMin = -10;
             rangeMax = 10;
         }
-        if (buyUp) {
-            if ($strategy.type === 'VOLUME'){
-                sellThreshold = -5;
-                buyThreshold = 5;
-            } else {
-                sellThreshold = -1;
-                buyThreshold = 1;
-            } 
-        } else {
-            if ($strategy.type === 'VOLUME'){
-                sellThreshold = 5;
-                buyThreshold = -5;
-            } else {
-                sellThreshold = 1;
-                buyThreshold = -1;
-            }
-        }
     }
-    setThresholds();
     
     // set longTerm default timeframe
     let longTerm = false;
@@ -411,10 +394,29 @@
         success.set(false);
     }
 
-    // resets when user changes strategies
+    // input changes
+    function changeDate() {
+        if ($success && $ticker.toUpperCase() === $symbol) {
+            let originalLongTerm = longTerm;
+            let newLongTerm = checkLongTerm();
+            if (originalLongTerm || (!originalLongTerm && !newLongTerm)) {
+                setData($apiData);
+                recalculate();
+            } else {
+                handleSubmit();
+            }
+        }
+    }
+    function changeTimeFrame() {
+        if ($success && $ticker.toUpperCase() === $symbol) {
+            handleSubmit();
+        }
+    }
     function changeStrategy() {
-        submitted.set(false);
         setThresholds();
+        if ($success && $ticker.toUpperCase() === $symbol) {
+            recalculate();
+        }
     }
     function changeBuySell() {
         buyUp = !buyUp;
@@ -454,20 +456,8 @@
         startInvested = !startInvested;
         recalculate();
     }
-    function changeDates() {
-        if ($success) {
-            let originalLongTerm = longTerm;
-            let newLongTerm = checkLongTerm();
-            if (originalLongTerm || (!originalLongTerm && !newLongTerm)) {
-                setData($apiData);
-                recalculate();
-            } else {
-                handleSubmit();
-            }
-        }
-    }
     function recalculate() {
-        if ($success) {
+        if ($success && $ticker.toUpperCase() === $symbol) {
             calculate();
         }
     }
@@ -486,13 +476,22 @@
         </thead>
         <tbody>
             <tr>
-                <td class='inputTd' data-label="Ticker"><input type="text" id="ticker" bind:value={$ticker} bind:this={tickerInput} placeholder="ex: AAPL" required ></td>
+                <td class='inputTd' data-label="Ticker">
+                    <input 
+                        type="text" 
+                        id="ticker" 
+                        bind:value={$ticker} 
+                        bind:this={tickerInput} 
+                        placeholder="ex: AAPL" 
+                        required 
+                    >
+                </td>
                 <td class='inputTd' data-label="Start">
                     <input 
                         type="date" 
                         id="startDate" 
                         bind:value={$startDate} 
-                        on:change={changeDates}
+                        on:change={changeDate}
                         min={longDate} 
                         max={yesterday} 
                         required 
@@ -503,14 +502,14 @@
                         type="date" 
                         id="endDate" 
                         bind:value={$endDate}
-                        on:change={changeDates} 
+                        on:change={changeDate} 
                         min={$startDate} 
                         max={yesterday} 
                         required
                     >
                 </td>
                 <td class='inputTd' data-label="Time Frame">
-                    <select id="timeFrame" bind:value={$strategy.timeFrame} required>
+                    <select id="timeFrame" bind:value={$strategy.timeFrame} on:change={changeTimeFrame} required>
                         {#each strategies.timeFrames as opt}
                             <option value={opt}>{opt}</option>
                         {/each}
@@ -550,7 +549,7 @@
                         max={rangeMax} 
                         id="sellThreshold" 
                         bind:value={buyThreshold} 
-                        on:change={changeBuyThreshold} 
+                        on:change={changeBuyThreshold}
                         thumbColor='rgb(255,33,56)' 
                         color1={buyUp ? '#ddd' : 'rgb(112,105,253)'} 
                         color2={buyUp ? '#ccc' : 'rgb(255,33,56)'} 
@@ -580,7 +579,7 @@
                         max={rangeMax} 
                         id="sellThreshold" 
                         bind:value={sellThreshold} 
-                        on:change={changeSellThreshold} 
+                        on:change={changeSellThreshold}
                         thumbColor='rgb(255,33,56)' 
                         color1={buyUp ? 'rgb(112,105,253)' : '#ddd'} 
                         color2={buyUp ? 'rgb(255,33,56)' : '#ccc'} 
@@ -603,13 +602,13 @@
                 </td>
             </tr>
             {#if (more)}
-                <tr>
+                <tr transition:fade="{{ duration: 80 }}">
                     <th colspan="2" class='hidden'>Start Invested</th>
                     <th class='hidden' colspan="1"></th>
                     <td data-label='Start Invested' colspan="2">
-                        <Switch on:change={toggleInvested} />
+                        <Switch bind:checked={startInvested} on:change={toggleInvested} />
                     </td>
-                </tr>
+                </tr>   
             {/if}
             <tr id="submitRow">
                 <td colspan="5">
@@ -687,11 +686,10 @@
         white-space: nowrap;
     }
     #more {
-        border-top: 2px solid #ddd;
+        border-top: 1px solid #ddd;
     }
     #more:hover {
         cursor: pointer;
-        background-color: rgb(245, 245, 245);
     }
     .plusMinus {
         font-size: 1.2rem;

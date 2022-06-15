@@ -396,9 +396,12 @@
         success.set(false);
     }
 
-    // input changes
+    // input changes    
+    let trimmedUpperTicker;
+    $: trimmedUpperTicker = $ticker.toUpperCase().trim();
+
     function changeDate() {
-        if ($success && $ticker.toUpperCase() === $symbol) {
+        if ($success && trimmedUpperTicker === $symbol) {
             let originalLongTerm = longTerm;
             let newLongTerm = checkLongTerm();
             if (originalLongTerm || (!originalLongTerm && !newLongTerm)) {
@@ -410,13 +413,13 @@
         }
     }
     function changeTimeFrame() {
-        if ($success && $ticker.toUpperCase() === $symbol) {
+        if ($success && trimmedUpperTicker === $symbol) {
             handleSubmit();
         }
     }
     function changeStrategy() {
         setThresholds();
-        if ($success && $ticker.toUpperCase() === $symbol) {
+        if ($success && trimmedUpperTicker === $symbol) {
             recalculate();
         }
     }
@@ -459,7 +462,7 @@
         recalculate();
     }
     function recalculate() {
-        if ($success && $ticker.toUpperCase() === $symbol) {
+        if ($success && trimmedUpperTicker === $symbol) {
             calculate();
         }
     }

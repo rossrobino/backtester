@@ -21,7 +21,4 @@
 		color: white;
 		font-size: 1.5rem;
 	}
-	footer a:hover {
-		color: #eee;
-	}
 </style>

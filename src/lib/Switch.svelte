@@ -3,11 +3,10 @@
 <script>
     export let checked = false;
     export let id = undefined;
-    export let onChange = undefined;
 </script>
 
 <label class="switch">
-    <input {id} on:change={onChange} type="checkbox" bind:checked />
+    <input {id} on:change type="checkbox" bind:checked />
     <span class="slider" />
 </label>
   

@@ -7,11 +7,13 @@
 -->
 
 <script>
-    import { endDate, endPrice, error, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, tradeList } from '../stores';
+    import { endDate, endPrice, error, loading, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, tradeList } from '../stores';
+    import { fade } from 'svelte/transition';
     import Switch from '$lib/Switch.svelte';
     import Chart from '$lib/Chart.svelte';
 
     let showAllData = false;
+    const fadeParameters = { duration: 300 };
     /*
         round function from:
         Rounding Decimals in JavaScript
@@ -30,15 +32,17 @@
         {#if ($tradeList.length === 0)}
             <p>No trades were completed.</p>
         {:else}
-            <table id='chartTable'>
-                <caption>Comparison</caption>
+            <table id='chartTable' in:fade="{fadeParameters}">
+                <caption>Comparison - {$symbol}</caption>
                 <tbody>
                     <tr>
-                        <Chart /> 
+                        {#key (($tradeList[$tradeList.length-1].amount)-$startPrice)/$startPrice*100}
+                            <Chart /> 
+                        {/key}
                     </tr>
                 </tbody>
             </table>
-            <table>
+            <table in:fade="{fadeParameters}">
                 <thead>
                     <tr>
                         <th scope="col">Strategy</th>
@@ -62,7 +66,7 @@
                     </tr>
                 </tbody>
             </table>
-            <table id="summaryTable">
+            <table id="summaryTable" in:fade="{fadeParameters}">
                 <caption>Summary</caption>
                     <tr>
                         <th class='hidden' colspan="4"></th>
@@ -70,7 +74,7 @@
                         <td data-label="{showAllData ? 'All' : 'Trades'}"><Switch bind:checked={showAllData} /></td>
                     </tr>  
             </table>
-            <table>
+            <table in:fade="{fadeParameters}">
                 <thead>
                     <tr>
                         <th scope="col">Date</th>
@@ -134,7 +138,7 @@
     {:else if ($error !== '')}
         <p>{$error}</p>
     {:else}
-        <p>Loading...</p>
+        <p></p>
     {/if}
 {:else}
     <p>

@@ -4,7 +4,6 @@
     export let value = 0;
     export let step = 1;
     export let id;
-    export let onChange;
     export let thumbColor = '#aaa';
     export let thumbDiameter = '1.1rem';
 
@@ -27,13 +26,13 @@
 
 <input 
     type='range' 
-    bind:value={value} 
+    bind:value
     {min} 
     {max} 
     {step} 
     {id} 
     name={id} 
-    on:change={onChange} 
+    on:change
     style='
         --thumbColor: {thumbColor};
         --backgroundStyle: {backgroundStyle};

@@ -7,7 +7,7 @@
  -->
 
 <script>
-    import { apiData, dateList, endDate, endPrice, error, metadata, priceList, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, ticker, timeSeriesDaily, tradeList, volList } from '../stores';
+    import { apiData, dateList, endDate, endPrice, error, firstChartRender, loading, metadata, priceList, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, ticker, timeSeriesDaily, tradeList, volList } from '../stores';
     import Switch from '$lib/Switch.svelte';
     import Range from '$lib/Range.svelte';
 
@@ -109,6 +109,7 @@
                 setData(data);
                 calculate();
                 success.set(true);
+                loading.set(false);
             } catch (e) {
                 if (data.message) {
                     error.set('Too many requests. Please wait a minute and try again.');
@@ -117,11 +118,13 @@
                 }
                 console.log(e);
                 console.log(data);
+                loading.set(false);
             }
         })
         .catch(e => {
             error.set(e);
             console.log(e);
+            loading.set(false);
             return {};
         });
     }
@@ -252,7 +255,6 @@
         let previousVolume;
         if($strategy.type === 'VOLUME'){
             previousVolume = $volList[0];
-            console.log(previousVolume)
         }
         
 
@@ -379,12 +381,8 @@
         return year % 100 === 0 ? year % 400 === 0 : year % 4 === 0;
     }
 
-    // triggers API call and caculations, submitted controls loading logic, reset error store
-    function handleSubmit() {
-        tickerInput.blur();
-        buyThresholdInput.blur();
-        sellThresholdInput.blur();
-        // check if compact or full request should be made, set longTerm accordingly
+    // check if compact or full request should be made, set longTerm accordingly
+    function checkLongTerm() {
         let checkStartDate = $startDate.split('-');
         let checkShortDate = shortDate.split('-');
         if (
@@ -396,6 +394,17 @@
         } else {
             longTerm = false;
         }
+        return longTerm;
+    }
+
+    // triggers API call and caculations, submitted controls loading logic, reset error store
+    function handleSubmit() {
+        loading.set(true);
+        tickerInput.blur();
+        buyThresholdInput.blur();
+        sellThresholdInput.blur();
+        checkLongTerm();
+        firstChartRender.set(true); // controls chart progress animation
         error.set('');
         getPrices();
         submitted.set(true);
@@ -412,6 +421,7 @@
         let temp = buyThreshold;
         buyThreshold = sellThreshold;
         sellThreshold = temp;
+        recalculate();
     }
     function changeBuyThreshold() {
         if (!buyUp) {
@@ -423,6 +433,7 @@
                 sellThreshold = buyThreshold;
             }
         }
+        recalculate();
     }
     function changeSellThreshold() {
         if (!buyUp) {
@@ -433,10 +444,31 @@
             if (sellThreshold > buyThreshold) {
                 buyThreshold = sellThreshold;
             }
-        } 
+        }
+        recalculate();
     }
     function toggleMore() {
         more = !more;
+    }
+    function toggleInvested() {
+        startInvested = !startInvested;
+        recalculate();
+    }
+    function changeDates() {
+        if ($success) {
+            let originalLongTerm = longTerm;
+            let newLongTerm = checkLongTerm();
+            if (originalLongTerm || (!originalLongTerm && !newLongTerm)) {
+                recalculate();
+            } else {
+                handleSubmit();
+            }
+        }
+    }
+    function recalculate() {
+        if ($success) {
+            calculate();
+        }
     }
 </script>
 
@@ -454,8 +486,28 @@
         <tbody>
             <tr>
                 <td class='inputTd' data-label="Ticker"><input type="text" id="ticker" bind:value={$ticker} bind:this={tickerInput} placeholder="ex: AAPL" required ></td>
-                <td class='inputTd' data-label="Start"><input type="date" id="startDate" bind:value={$startDate} min={longDate} max={yesterday} required ></td>
-                <td class='inputTd' data-label="End"><input type="date" id="endDate" bind:value={$endDate} min={$startDate} max={yesterday} required></td>
+                <td class='inputTd' data-label="Start">
+                    <input 
+                        type="date" 
+                        id="startDate" 
+                        bind:value={$startDate} 
+                        on:change={changeDates}
+                        min={longDate} 
+                        max={yesterday} 
+                        required 
+                    >
+                </td>
+                <td class='inputTd' data-label="End">
+                    <input 
+                        type="date" 
+                        id="endDate" 
+                        bind:value={$endDate}
+                        on:change={changeDates} 
+                        min={$startDate} 
+                        max={yesterday} 
+                        required
+                    >
+                </td>
                 <td class='inputTd' data-label="Time Frame">
                     <select id="timeFrame" bind:value={$strategy.timeFrame} required>
                         {#each strategies.timeFrames as opt}
@@ -473,7 +525,7 @@
                 <th colspan="2" class='hidden'>{buyUp ? 'Buy High / Sell Low' : 'Buy Low / Sell High'}</th>
                 <th class='hidden' colspan="1"></th>
                 <td data-label={buyUp ? 'Buy High / Sell Low' : 'Buy Low / Sell High'} colspan="2">
-                    <Switch bind:checked={buyUp} onChange={changeBuySell} />
+                    <Switch bind:checked={buyUp} on:change={changeBuySell} />
                 </td>
             </tr>  
             <tr>
@@ -482,7 +534,13 @@
                 </th>
                 <th colspan="1" class='buySellInputTh'>
                     <div class='noWrap'>
-                        <input id='buySellInput' type='number' bind:value={buyThreshold} on:change={changeBuyThreshold} bind:this={buyThresholdInput} /> % 
+                        <input 
+                            id='buySellInput' 
+                            type='number' 
+                            bind:value={buyThreshold} 
+                            on:change={changeBuyThreshold} 
+                            bind:this={buyThresholdInput} 
+                        /> % 
                     </div>
                 </th>
                 <td class='rangeTd' colspan="2">
@@ -491,7 +549,7 @@
                         max={rangeMax} 
                         id="sellThreshold" 
                         bind:value={buyThreshold} 
-                        onChange={changeBuyThreshold} 
+                        on:change={changeBuyThreshold} 
                         thumbColor='rgb(255,33,56)' 
                         color1={buyUp ? '#ddd' : 'rgb(112,105,253)'} 
                         color2={buyUp ? '#ccc' : 'rgb(255,33,56)'} 
@@ -506,7 +564,13 @@
                 </th>
                 <th colspan="1" class='buySellInputTh'>
                     <div class='noWrap'>
-                        <input id='buySellInput' type='number' bind:value={sellThreshold} on:change={changeSellThreshold} bind:this={sellThresholdInput} /> % 
+                        <input 
+                            id='buySellInput' 
+                            type='number' 
+                            bind:value={sellThreshold} 
+                            on:change={changeSellThreshold} 
+                            bind:this={sellThresholdInput} 
+                        /> % 
                     </div>
                 </th>
                 <td class='rangeTd' colspan="2">
@@ -515,7 +579,7 @@
                         max={rangeMax} 
                         id="sellThreshold" 
                         bind:value={sellThreshold} 
-                        onChange={changeSellThreshold} 
+                        on:change={changeSellThreshold} 
                         thumbColor='rgb(255,33,56)' 
                         color1={buyUp ? 'rgb(112,105,253)' : '#ddd'} 
                         color2={buyUp ? 'rgb(255,33,56)' : '#ccc'} 
@@ -542,12 +606,20 @@
                     <th colspan="2" class='hidden'>Start Invested</th>
                     <th class='hidden' colspan="1"></th>
                     <td data-label='Start Invested' colspan="2">
-                        <Switch bind:checked={startInvested} />
+                        <Switch on:change={toggleInvested} />
                     </td>
                 </tr>
             {/if}
             <tr id="submitRow">
-                <td colspan="5"><button type="submit">SUBMIT</button></td>
+                <td colspan="5">
+                    <button type="submit">
+                        {#if ($loading)}
+                            LOADING
+                        {:else}
+                            SUBMIT
+                        {/if}
+                    </button>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -569,6 +641,9 @@
         background-color: white;
         font-size: .8rem;
     }
+    select {
+        cursor: pointer;
+    }
     button {
         width: 35%;
         height: 2.6rem;
@@ -578,7 +653,7 @@
         border: none;
     }
     button:hover {
-        color: #eee;
+        cursor: pointer;
     }
     table {
         border-collapse: collapse;
@@ -615,6 +690,7 @@
     }
     #more:hover {
         cursor: pointer;
+        background-color: rgb(245, 245, 245);
     }
     .plusMinus {
         font-size: 1.2rem;

@@ -184,7 +184,7 @@
             }
         }
 
-        // check start date to see if the market was closed, correct accordingly
+        // check end date to see if the market was closed, correct accordingly
         for (let i = 0; i < 35; i++) {
             if ($startDate === $endDate) {
                 endDate.set(originalEndDate);
@@ -459,6 +459,7 @@
             let originalLongTerm = longTerm;
             let newLongTerm = checkLongTerm();
             if (originalLongTerm || (!originalLongTerm && !newLongTerm)) {
+                setData($apiData);
                 recalculate();
             } else {
                 handleSubmit();

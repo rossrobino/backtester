@@ -30,7 +30,7 @@
 {#if ($submitted)}
     {#if ($success && $error === '')}
         {#if ($tradeList.length === 0)}
-            <p>No trades were completed.</p>
+            <p>Please select a new date.</p>
         {:else}
             <table id='chartTable' in:fade="{fadeParameters}">
                 <caption>Comparison - {$symbol}</caption>

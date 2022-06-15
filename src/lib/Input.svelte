@@ -11,6 +11,8 @@
     import { fade } from 'svelte/transition'
     import Switch from '$lib/Switch.svelte';
     import Range from '$lib/Range.svelte';
+    import Fa from 'svelte-fa/src/fa.svelte';
+    import { faPercent, faSpinner, faChartLine } from '@fortawesome/free-solid-svg-icons/index.es';
 
     // import API key, assign correctly depending on environment
     import { AV_API_KEY } from '$lib/env';
@@ -540,7 +542,7 @@
                             bind:value={buyThreshold} 
                             on:change={changeBuyThreshold} 
                             bind:this={buyThresholdInput} 
-                        /> % 
+                        /> <Fa icon={faPercent} />
                     </div>
                 </th>
                 <td class='rangeTd' colspan="2">
@@ -570,7 +572,7 @@
                             bind:value={sellThreshold} 
                             on:change={changeSellThreshold} 
                             bind:this={sellThresholdInput} 
-                        /> % 
+                        /> <Fa icon={faPercent} />
                     </div>
                 </th>
                 <td class='rangeTd' colspan="2">
@@ -614,9 +616,9 @@
                 <td colspan="5">
                     <button type="submit">
                         {#if ($loading)}
-                            LOADING
+                            <Fa icon={faSpinner} spin/>&nbsp LOADING
                         {:else}
-                            SUBMIT
+                            <Fa icon={faChartLine} />&nbsp; SUBMIT 
                         {/if}
                     </button>
                 </td>

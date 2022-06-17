@@ -276,6 +276,7 @@
     @media screen and (max-width: 640px) {
         table thead, .hidden {
             height: 1px;
+            width: 1px;
             overflow: hidden;
             padding: 0;
             position: absolute;

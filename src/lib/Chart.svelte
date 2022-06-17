@@ -12,21 +12,63 @@
 <script>
     import { onMount } from 'svelte';
     import Chart from 'chart.js/auto/auto.js';
-    import { dateList, firstChartRender, priceList, tradeList } from '../stores'
+    import { colorList, dateList, firstChartRender, priceList, portfolio, tradeList } from '../stores'
 
     // push coordinates into two lists
     let comparisonChart;
     const buyAndHoldData = [];
     const volData = [];
     for (let i = 0; i < $priceList.length; i++) {
+        buyAndHoldData.push({x: i, y: $priceList[i]});
         if (i === 0) {
-            buyAndHoldData.push({x: i, y: $priceList[i]});
             volData.push({x: i, y: $priceList[i]});
         } else {
-            buyAndHoldData.push({x: i, y: $priceList[i]});
             volData.push({x: i, y: $tradeList[i-1].amount});
         } 
     }
+
+    let datasets = [
+        {
+            label: 'Buy & Hold',
+            borderColor: 'rgb(252,191,84)',
+            backgroundColor: 'white',
+            borderWidth: 4,
+            radius: 0,
+            data: buyAndHoldData,
+            borderDash: [5, 5],
+        }
+    ];
+    let entryData;
+    for (let i = 0; i < $portfolio.length; i++) {
+        entryData = [];
+        for (let j = 0; j < $portfolio[i].tradeList.length+1; j++) {
+            if (j === 0) {
+                entryData.push({x: i, y: $priceList[j]});
+            } else {
+                entryData.push({x: i, y: $portfolio[i].tradeList[j-1].amount});
+            } 
+        }
+        datasets.push(
+            {
+                label: $portfolio[i].id,
+                borderColor: $colorList[i],
+                backgroundColor: $colorList[i],
+                borderWidth: 4,
+                radius: 0,
+                data: entryData
+            }
+        );
+    }
+    datasets.push(
+        {
+            label: 'Current',
+            borderColor: $colorList[$colorList.length-3],
+            backgroundColor: $colorList[$colorList.length-3],
+            borderWidth: 4,
+            radius: 0,
+            data: volData
+        }
+    );
 
     // create animation for progression
     let totalDuration = 0;
@@ -68,25 +110,7 @@
     const config = {
         type: 'line',
         data: {
-            datasets: [
-                {
-                    label: 'Buy and Hold',
-                    borderColor: 'rgb(252,191,84)',
-                    backgroundColor: 'white',
-                    borderWidth: 4,
-                    radius: 0,
-                    data: buyAndHoldData,
-                    borderDash: [5, 5],
-                },
-                {
-                    label: 'Volatility',
-                    borderColor: 'rgb(112,105,253)',
-                    backgroundColor: 'rgb(112,105,253)',
-                    borderWidth: 4,
-                    radius: 0,
-                    data: volData,
-                }
-            ]
+            datasets: datasets
         },
         options: {
             animation,

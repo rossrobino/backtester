@@ -7,7 +7,7 @@
  -->
 
 <script>
-    import { apiData, dateList, endDate, endPrice, error, firstChartRender, loading, metadata, priceList, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, ticker, timeSeriesDaily, tradeList, volList } from '../stores';
+    import { apiData, dateList, endDate, endPrice, entry, entryId, error, firstChartRender, loading, metadata, priceList, rateOfReturn, startDate, startPrice, strategy, portfolio, submitted, success, symbol, ticker, timeSeriesDaily, tradeList, volList, colorList } from '../stores';
     import { fade } from 'svelte/transition'
     import Switch from '$lib/Switch.svelte';
     import Range from '$lib/Range.svelte';
@@ -343,6 +343,19 @@
             // push trade object to tradeList
             $tradeList.push(trade);
         }
+        entry.set({
+            "id": $entryId,
+            "ticker": $symbol,
+            "timeFrame": $strategy.timeFrame,
+            "strategyType": $strategy.type,
+            "buy": (buyUp ? '> ' + buyThreshold : '< ' + buyThreshold),
+            "sell": (buyUp ? '< ' + sellThreshold : '> ' + sellThreshold),
+            "startInvested": (startInvested ? 'YES' : 'NO'),
+            "tradeList": $tradeList, 
+            "return": round((($tradeList[$tradeList.length-1].amount)-$startPrice)/$startPrice*100, 2),
+            "startPrice": round($startPrice,2),
+            "endPrice": $tradeList[$tradeList.length-1].amount
+        });
     }
 
     /*
@@ -402,6 +415,9 @@
 
     function changeDate() {
         if ($success && trimmedUpperTicker === $symbol) {
+            portfolio.set([]);
+            entryId.set(1);
+            colorList.set($colorList.slice(0,3));
             let originalLongTerm = longTerm;
             let newLongTerm = checkLongTerm();
             if (originalLongTerm || (!originalLongTerm && !newLongTerm)) {

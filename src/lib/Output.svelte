@@ -1,16 +1,23 @@
 <!--
-    table styles from:
+    references: 
+
     Simple Responsive Table in CSS
     Matt Smith
     5/26/22
     https://codepen.io/AllThingsSmitty/pen/MyqmdM 
+
+    https://stackoverflow.com/questions/23095637/how-do-you-get-random-rgb-in-javascript
+    6/17/22
+    by: adeneo
 -->
 
 <script>
-    import { endDate, endPrice, error, loading, rateOfReturn, startDate, startPrice, strategy, submitted, success, symbol, tradeList } from '../stores';
+    import { colorList, endDate, endPrice, entry, entryId, error, rateOfReturn, startDate, startPrice, strategy, portfolio, submitted, success, symbol, tradeList } from '../stores';
     import { fade } from 'svelte/transition';
     import Switch from '$lib/Switch.svelte';
     import Chart from '$lib/Chart.svelte';
+    import Fa from 'svelte-fa/src/fa.svelte';
+    import { faPlus } from '@fortawesome/free-solid-svg-icons/index.es';
 
     let showAllData = false;
     const fadeParameters = { duration: 400 };
@@ -23,6 +30,28 @@
     */
     function round(value, decimals) {
         return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+    }
+
+    function randomColor() {
+        return 'rgb(' + Math.round(Math.random()*255) + ',' + Math.round(Math.random()*255) + ',' + Math.round(Math.random()*255) + ')';
+    }
+
+    function entryCheck(entry, portfolio) {
+        for (let i = 0; i < portfolio.length; i++) {
+            if (portfolio[i] === entry) {
+                return true
+            }
+        }
+        return false;
+    }
+
+    function addEntry() {
+        if (!entryCheck($entry, $portfolio)) {
+            $portfolio.push($entry);
+            $portfolio = $portfolio;
+            $entryId++;
+            $colorList.push(randomColor());
+        }
     }
 </script>
 
@@ -59,11 +88,51 @@
                         <td data-label="Return">{$rateOfReturn}%</td>
                     </tr>
                     <tr>
-                        <td data-label="Strategy">Volatility</td>
+                        <td data-label="Strategy">Current</td>
                         <td data-label='{$startDate}'>{round($startPrice,2)}</td>
                         <td data-label='{$endDate}'>{$tradeList[$tradeList.length-1].amount}</td>
                         <td data-label="Return">{round((($tradeList[$tradeList.length-1].amount)-$startPrice)/$startPrice*100, 2)}%</td>
                     </tr>
+                </tbody>
+            </table>
+            <table in:fade="{fadeParameters}" id='portfolio'>
+                <caption>Portfolio</caption>
+                {#if ($portfolio.length > 0)}
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Ticker</th>
+                            <th scope="col">Start</th>
+                            <th scope="col">End</th>
+                            <th scope="col">Time Frame</th>
+                            <th scope="col">Strategy</th>
+                            <th scope="col">Buy</th>
+                            <th scope="col">Sell</th>
+                            <th scope="col">Start Invested</th>
+                            <th scope="col">Return</th>
+                        </tr>
+                    </thead>
+                {/if}
+                <tbody>
+                    {#key $portfolio}
+                        {#each $portfolio as entry}
+                            <tr>
+                                <td data-label="#">{entry.id}</td>
+                                <td data-label="Ticker">{entry.ticker}</td>
+                                <td data-label="Start">{entry.startPrice}</td>
+                                <td data-label="End">{entry.endPrice}</td>
+                                <td data-label="Time Frame">{entry.timeFrame}</td>
+                                <td data-label="Strategy">{entry.strategyType}</td>
+                                <td data-label="Buy">{entry.buy}%</td>
+                                <td data-label="Sell">{entry.sell}%</td>
+                                <td data-label="Start Invested">{entry.startInvested}</td>
+                                <td data-label="Return">{entry.return}%</td>
+                            </tr>
+                        {/each}
+                    {/key}
+                    <tr>
+                        <td colspan="10"><button on:click={addEntry}><Fa icon={faPlus}/> ADD CURRENT</button></td>
+                    </tr>  
                 </tbody>
             </table>
             <table id="summaryTable" in:fade="{fadeParameters}">
@@ -148,6 +217,17 @@
 {/if}
 
 <style>
+    button {
+        height: 2.6rem;
+        width: 35%;
+        background-color: rgb(112,105,253);
+        border-radius: 3px;
+        color: white;
+        border: none;
+    }
+    button:hover {
+        cursor: pointer;
+    }
     p {
         margin: 1rem;
         text-align: center;
@@ -188,6 +268,9 @@
     }
     #chartTable tr {
         border-bottom: none;
+    }
+    #portfolio thead tr th {
+        font-size: .8rem;
     }
 
     @media screen and (max-width: 640px) {

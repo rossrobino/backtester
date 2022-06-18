@@ -9,6 +9,11 @@
     https://stackoverflow.com/questions/23095637/how-do-you-get-random-rgb-in-javascript
     6/17/22
     by: adeneo
+
+    Rounding Decimals in JavaScript
+    Jack Moore
+    5/26/22
+    https://www.jacklmoore.com/notes/rounding-in-javascript/ 
 -->
 
 <script>
@@ -17,17 +22,12 @@
     import Switch from '$lib/Switch.svelte';
     import Chart from '$lib/Chart.svelte';
     import Fa from 'svelte-fa/src/fa.svelte';
-    import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons/index.es';
+    import { faFolderPlus, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons/index.es';
 
     let showAllData = false;
+    let addedEntry = false;
     const fadeParameters = { duration: 400 };
-    /*
-        round function from:
-        Rounding Decimals in JavaScript
-        Jack Moore
-        5/26/22
-        https://www.jacklmoore.com/notes/rounding-in-javascript/ 
-    */
+
     function round(value, decimals) {
         return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
     }
@@ -73,7 +73,7 @@
             <p>Please select a new date.</p>
         {:else}
             <table id='chartTable' in:fade="{fadeParameters}">
-                <caption>Comparison - {$symbol}</caption>
+                <!-- <caption>Comparison</caption> -->
                 <tbody>
                     <tr>
                         {#key $entry}
@@ -82,8 +82,13 @@
                     </tr>
                     <tr>
                         <td>
-                            <button on:click={removeEntry}><Fa icon={faMinus}/> REMOVE</button>
-                            <button on:click={addEntry}><Fa icon={faPlus}/> ADD CURRENT</button>
+                            {#if ($portfolio.length === 0)}       
+                                <button on:click={addEntry}><Fa icon={faFolderPlus}/> CREATE PORTFOLIO</button>
+                            {:else}
+                                {#if !entryCheck($entry, $portfolio)}
+                                    <button on:click={addEntry}><Fa icon={faPlus}/> ADD</button>
+                                {/if}
+                            {/if}
                         </td>
                     </tr>  
                 </tbody>
@@ -112,51 +117,55 @@
                     </tr>
                 </tbody>
             </table>
-            <table in:fade="{fadeParameters}" id='portfolio'>
-                <caption>Portfolio</caption>
-                {#if ($portfolio.length > 0)}
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Ticker</th>
-                            <th scope="col">Start</th>
-                            <th scope="col">End</th>
-                            <th scope="col">Time Frame</th>
-                            <th scope="col">Strategy</th>
-                            <th scope="col">Buy</th>
-                            <th scope="col">Sell</th>
-                            <th scope="col">Start Invested</th>
-                            <th scope="col">Return</th>
-                        </tr>
-                    </thead>
-                {/if}
-                <tbody>
-                    {#key $entry}
-                        {#each $portfolio as entry}
+            {#if ($portfolio.length > 0)}
+                <table in:fade="{fadeParameters}" id='portfolio'>
+                    <caption>Portfolio</caption>
+                    {#if ($portfolio.length > 0)}
+                        <thead>
                             <tr>
-                                <td data-label="#">{entry.id}</td>
-                                <td data-label="Ticker">{entry.ticker}</td>
-                                <td data-label="Start">{entry.startPrice}</td>
-                                <td data-label="End">{entry.endPrice}</td>
-                                <td data-label="Time Frame">{entry.timeFrame}</td>
-                                <td data-label="Strategy">{entry.strategyType}</td>
-                                <td data-label="Buy">{entry.buy}%</td>
-                                <td data-label="Sell">{entry.sell}%</td>
-                                <td data-label="Start Invested">{entry.startInvested}</td>
-                                <td data-label="Return">{entry.return}%</td>
+                                <th scope="col">#</th>
+                                <th scope="col">Ticker</th>
+                                <th scope="col">Start</th>
+                                <th scope="col">End</th>
+                                <th scope="col">Time Frame</th>
+                                <th scope="col">Strategy</th>
+                                <th scope="col">Buy</th>
+                                <th scope="col">Sell</th>
+                                <th scope="col">Start Invested</th>
+                                <th scope="col">Return</th>
                             </tr>
-                        {/each}
-                    {/key}
-                    <tr>
-                        <td colspan="10">
-                            <button on:click={removeEntry}><Fa icon={faMinus}/> REMOVE</button>
-                            <button on:click={addEntry}><Fa icon={faPlus}/> ADD CURRENT</button>
-                        </td>
-                    </tr>  
-                </tbody>
-            </table>
+                        </thead>
+                    {/if}
+                    <tbody>
+                        {#key $entry}
+                            {#each $portfolio as entry}
+                                <tr>
+                                    <td data-label="#">{entry.id}</td>
+                                    <td data-label="Ticker">{entry.ticker}</td>
+                                    <td data-label="Start">{entry.startPrice}</td>
+                                    <td data-label="End">{entry.endPrice}</td>
+                                    <td data-label="Time Frame">{entry.timeFrame}</td>
+                                    <td data-label="Strategy">{entry.strategyType}</td>
+                                    <td data-label="Buy">{entry.buy}%</td>
+                                    <td data-label="Sell">{entry.sell}%</td>
+                                    <td data-label="Start Invested">{entry.startInvested}</td>
+                                    <td data-label="Return">{entry.return}%</td>
+                                </tr>
+                            {/each}
+                        {/key}
+                        <tr>
+                            <td colspan="10">
+                                <button on:click={removeEntry}><Fa icon={faMinus}/> REMOVE</button>
+                                {#if !entryCheck($entry, $portfolio)}
+                                    <button on:click={addEntry}><Fa icon={faPlus}/> ADD</button>
+                                {/if}
+                            </td>
+                        </tr>  
+                    </tbody>
+                </table>
+            {/if}
             <table id="summaryTable" in:fade="{fadeParameters}">
-                <caption>Summary</caption>
+                <caption>Summary - Current Strategy</caption>
                     <tr>
                         <th class='hidden' colspan="4"></th>
                         <th class='hidden'>{showAllData ? 'All' : 'Trades'}</th>
@@ -262,7 +271,7 @@
         margin: 1rem;
     }
     table caption {
-        font-size: 1.3rem;
+        font-size: 1rem;
         margin: .6rem 0;
         color: rgb(112,105,253);
     }

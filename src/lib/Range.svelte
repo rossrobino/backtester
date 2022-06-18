@@ -5,7 +5,7 @@
     export let step = 1;
     export let id;
     export let thumbColor = '#aaa';
-    export let thumbDiameter = '1.1rem';
+    export let thumbDiameter = '1.3rem';
 
     // progress gradient colors from left to right
     export let color1 = '#ccc';

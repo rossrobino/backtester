@@ -7,6 +7,11 @@
 
     https://www.chartjs.org/docs/latest/samples/animations/progressive-line.html
     6/6/22
+
+    Rounding Decimals in JavaScript
+    Jack Moore
+    5/26/22
+    https://www.jacklmoore.com/notes/rounding-in-javascript/ 
  -->
 
 <script>
@@ -14,14 +19,18 @@
     import Chart from 'chart.js/auto/auto.js';
     import { colorList, dateList, firstChartRender, priceList, portfolio, tradeList } from '../stores'
 
+    function round(value, decimals) {
+        return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+    }
+
     // push coordinates into two lists
     let comparisonChart;
     const buyAndHoldData = [];
     const volData = [];
     for (let i = 0; i < $priceList.length; i++) {
-        buyAndHoldData.push({x: i, y: $priceList[i]});
+        buyAndHoldData.push({x: i, y: round($priceList[i], 2)});
         if (i === 0) {
-            volData.push({x: i, y: $tradeList[i].previousClose});
+            volData.push({x: i, y: round($tradeList[i].previousClose, 2)});
         } else {
             volData.push({x: i, y: $tradeList[i-1].amount});
         } 
@@ -42,7 +51,7 @@
         entryData = [];
         for (let j = 0; j < $portfolio[i].tradeList.length+1; j++) {
             if (j === 0) {
-                entryData.push({x: i, y: $portfolio[i].tradeList[j].previousClose});
+                entryData.push({x: i, y: round($portfolio[i].tradeList[j].previousClose, 2)});
             } else {
                 entryData.push({x: i, y: $portfolio[i].tradeList[j-1].amount});
             } 

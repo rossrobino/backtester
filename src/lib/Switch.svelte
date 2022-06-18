@@ -32,8 +32,8 @@
         right: 0;
         bottom: 0;
         background-color: #ccc;
-        -webkit-transition: 0.4s;
-        transition: 0.4s;
+        -webkit-transition: 0.3s;
+        transition: 0.3s;
         border-radius: 1.7rem;
     }
   
@@ -45,8 +45,8 @@
         left: .2rem;
         bottom: .2rem;
         background-color: white;
-        -webkit-transition: 0.4s;
-        transition: 0.4s;
+        -webkit-transition: 0.3s;
+        transition: 0.3s;
         border-radius: 50%;
     }
   

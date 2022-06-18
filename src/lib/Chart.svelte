@@ -17,27 +17,30 @@
 <script>
     import { onMount } from 'svelte';
     import Chart from 'chart.js/auto/auto.js';
-    import { colorList, dateList, firstChartRender, priceList, portfolio, tradeList } from '../stores'
+    import { dateList, firstChartRender, priceList, portfolio, entry, symbol } from '../stores'
+
+    let comparisonChart;
 
     function round(value, decimals) {
         return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
     }
 
     // push coordinates into two lists
-    let comparisonChart;
     const buyAndHoldData = [];
     const volData = [];
+
     for (let i = 0; i < $priceList.length; i++) {
         buyAndHoldData.push({x: i, y: round($priceList[i], 2)});
         if (i === 0) {
-            volData.push({x: i, y: round($tradeList[i].previousClose, 2)});
+            volData.push({x: i, y: round($entry.tradeList[i].previousClose, 2)});
         } else {
-            volData.push({x: i, y: $tradeList[i-1].amount});
+            volData.push({x: i, y: $entry.tradeList[i-1].amount});
         } 
     }
+
     let datasets = [
         {
-            label: 'Buy & Hold',
+            label: 'Buy & Hold - '+ $symbol,
             borderColor: 'rgb(252,191,84)',
             backgroundColor: 'white',
             borderWidth: 4,
@@ -59,8 +62,8 @@
         datasets.push(
             {
                 label: $portfolio[i].id,
-                borderColor: $colorList[i],
-                backgroundColor: $colorList[i],
+                borderColor: $portfolio[i].color,
+                backgroundColor: $portfolio[i].color,
                 borderWidth: 4,
                 radius: 0,
                 data: entryData
@@ -70,8 +73,8 @@
     datasets.push(
         {
             label: 'Current',
-            borderColor: $colorList[$colorList.length-3],
-            backgroundColor: $colorList[$colorList.length-3],
+            borderColor: $entry.color,
+            backgroundColor: $entry.color,
             borderWidth: 4,
             radius: 0,
             data: volData

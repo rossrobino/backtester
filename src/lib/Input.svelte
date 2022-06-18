@@ -212,7 +212,7 @@
 
     // determine results and set values into stores.js
     function calculate() {
-        // empty out price and trade lists in case of multiple submissions
+        // empty out lists in case of multiple submissions
         priceList.set([]);
         tradeList.set([]);
         volList.set([]);
@@ -354,7 +354,8 @@
             "tradeList": $tradeList, 
             "return": round((($tradeList[$tradeList.length-1].amount)-$startPrice)/$startPrice*100, 2),
             "startPrice": round($startPrice,2),
-            "endPrice": $tradeList[$tradeList.length-1].amount
+            "endPrice": $tradeList[$tradeList.length-1].amount,
+            "color": $colorList[$portfolio.length]
         });
     }
 
@@ -414,10 +415,8 @@
     $: trimmedUpperTicker = $ticker.toUpperCase().trim();
 
     function changeDate() {
-        if ($success && trimmedUpperTicker === $symbol) {
-            portfolio.set([]);
-            entryId.set(1);
-            colorList.set($colorList.slice(0,3));
+        resetPortfolio();
+        if ($success && trimmedUpperTicker === $symbol) { 
             let originalLongTerm = longTerm;
             let newLongTerm = checkLongTerm();
             if (originalLongTerm || (!originalLongTerm && !newLongTerm)) {
@@ -429,6 +428,7 @@
         }
     }
     function changeTimeFrame() {
+        resetPortfolio();
         if ($success && trimmedUpperTicker === $symbol) {
             handleSubmit();
         }
@@ -482,31 +482,28 @@
             calculate();
         }
     }
+    function resetPortfolio() {
+        if ($success) {
+            portfolio.set([]);
+            entryId.set(1);
+            colorList.set($colorList.slice(0,3));
+        }
+    }
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
     <table>
         <thead>
-            <tr>
-                <th scope="col"><label for="ticker">Ticker</label></th>
+            <tr>   
                 <th scope="col"><label for="startDate">Start</label></th>
                 <th scope="col"><label for="endDate">End</label></th>
                 <th scope="col"><label for="timeFrame">Time Frame</label></th>
+                <th scope="col"><label for="ticker">Ticker</label></th>
                 <th scope="col"><label for="strategy">Strategy</label></th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td class='inputTd' data-label="Ticker">
-                    <input 
-                        type="text" 
-                        id="ticker" 
-                        bind:value={$ticker} 
-                        bind:this={tickerInput} 
-                        placeholder="ex: AAPL" 
-                        required 
-                    >
-                </td>
                 <td class='inputTd' data-label="Start">
                     <input 
                         type="date" 
@@ -534,6 +531,16 @@
                         {#each strategies.timeFrames as opt}
                             <option value={opt}>{opt}</option>
                         {/each}
+                </td>
+                <td class='inputTd' data-label="Ticker">
+                    <input 
+                        type="text" 
+                        id="ticker" 
+                        bind:value={$ticker} 
+                        bind:this={tickerInput} 
+                        placeholder="ex: AAPL" 
+                        required 
+                    >
                 </td>
                 <td class='inputTd' data-label="Strategy">
                     <select id="strategy" bind:value={$strategy.type} on:change={changeStrategy} required>

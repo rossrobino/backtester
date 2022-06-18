@@ -22,7 +22,7 @@
     import Switch from '$lib/Switch.svelte';
     import Chart from '$lib/Chart.svelte';
     import Fa from 'svelte-fa/src/fa.svelte';
-    import { faFolderPlus, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons/index.es';
+    import { faArrowTrendUp,faFolderPlus, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons/index.es';
 
     let showAllData = false;
     let addedEntry = false;
@@ -49,7 +49,6 @@
         if (!entryCheck($entry, $portfolio)) {
             $portfolio.push($entry);
             $portfolio = $portfolio;
-            $entry = $entry;
             $entryId++;
             $colorList.push(randomColor());
         }
@@ -140,7 +139,10 @@
                         {#key $entry}
                             {#each $portfolio as entry}
                                 <tr>
-                                    <td data-label="#">{entry.id}</td>
+                                    <td data-label="#" style="color: {entry.color};">
+                                        {entry.id} 
+                                        <Fa icon={faArrowTrendUp}/>
+                                    </td>
                                     <td data-label="Ticker">{entry.ticker}</td>
                                     <td data-label="Start">{entry.startPrice}</td>
                                     <td data-label="End">{entry.endPrice}</td>

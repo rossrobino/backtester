@@ -17,7 +17,7 @@
     import Switch from '$lib/Switch.svelte';
     import Chart from '$lib/Chart.svelte';
     import Fa from 'svelte-fa/src/fa.svelte';
-    import { faPlus } from '@fortawesome/free-solid-svg-icons/index.es';
+    import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons/index.es';
 
     let showAllData = false;
     const fadeParameters = { duration: 400 };
@@ -49,8 +49,19 @@
         if (!entryCheck($entry, $portfolio)) {
             $portfolio.push($entry);
             $portfolio = $portfolio;
+            $entry = $entry;
             $entryId++;
             $colorList.push(randomColor());
+        }
+    }
+    function removeEntry() {
+        if ($entryId > 0) {
+            if ($entryId > 1) {
+                $colorList.pop();
+                $entryId--;
+            }
+            $portfolio.pop();
+            $entry.id = $entryId;
         }
     }
 </script>
@@ -65,10 +76,16 @@
                 <caption>Comparison - {$symbol}</caption>
                 <tbody>
                     <tr>
-                        {#key (($tradeList[$tradeList.length-1].amount)-$startPrice)/$startPrice*100}
+                        {#key $entry}
                             <Chart /> 
                         {/key}
                     </tr>
+                    <tr>
+                        <td>
+                            <button on:click={removeEntry}><Fa icon={faMinus}/> REMOVE</button>
+                            <button on:click={addEntry}><Fa icon={faPlus}/> ADD CURRENT</button>
+                        </td>
+                    </tr>  
                 </tbody>
             </table>
             <table in:fade="{fadeParameters}">
@@ -114,7 +131,7 @@
                     </thead>
                 {/if}
                 <tbody>
-                    {#key $portfolio}
+                    {#key $entry}
                         {#each $portfolio as entry}
                             <tr>
                                 <td data-label="#">{entry.id}</td>
@@ -131,7 +148,10 @@
                         {/each}
                     {/key}
                     <tr>
-                        <td colspan="10"><button on:click={addEntry}><Fa icon={faPlus}/> ADD CURRENT</button></td>
+                        <td colspan="10">
+                            <button on:click={removeEntry}><Fa icon={faMinus}/> REMOVE</button>
+                            <button on:click={addEntry}><Fa icon={faPlus}/> ADD CURRENT</button>
+                        </td>
                     </tr>  
                 </tbody>
             </table>

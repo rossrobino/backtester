@@ -21,12 +21,11 @@
     for (let i = 0; i < $priceList.length; i++) {
         buyAndHoldData.push({x: i, y: $priceList[i]});
         if (i === 0) {
-            volData.push({x: i, y: $priceList[i]});
+            volData.push({x: i, y: $tradeList[i].previousClose});
         } else {
             volData.push({x: i, y: $tradeList[i-1].amount});
         } 
     }
-
     let datasets = [
         {
             label: 'Buy & Hold',
@@ -43,7 +42,7 @@
         entryData = [];
         for (let j = 0; j < $portfolio[i].tradeList.length+1; j++) {
             if (j === 0) {
-                entryData.push({x: i, y: $priceList[j]});
+                entryData.push({x: i, y: $portfolio[i].tradeList[j].previousClose});
             } else {
                 entryData.push({x: i, y: $portfolio[i].tradeList[j-1].amount});
             } 

@@ -12,7 +12,7 @@
     import Switch from '$lib/Switch.svelte';
     import Range from '$lib/Range.svelte';
     import Fa from 'svelte-fa/src/fa.svelte';
-    import { faPercent, faSpinner, faChartLine } from '@fortawesome/free-solid-svg-icons/index.es';
+    import { faDollar, faPercent, faSpinner, faChartLine } from '@fortawesome/free-solid-svg-icons/index.es';
 
     // import API key, assign correctly depending on environment
     import { AV_API_KEY } from '$lib/env';
@@ -38,6 +38,8 @@
     let tickerInput;
     let buyThresholdInput;
     let sellThresholdInput;
+    let multiplier;
+    let initialInvestment;
 
     // set default percentages for buy/sell thresholds
     let sellThreshold = 1;
@@ -233,6 +235,16 @@
                 $volList.push(parseFloat($timeSeriesDaily[date]["6. volume"]));
             }
         }
+        // adjust to user entered starting amount
+        if (initialInvestment) {
+            startPrice.set(Number($timeSeriesDaily[$startDate]["5. adjusted close"]));
+            endPrice.set(Number($timeSeriesDaily[$endDate]["5. adjusted close"]));
+            multiplier = initialInvestment/$startPrice;
+            startPrice.set($startPrice*multiplier);
+            endPrice.set($endPrice*multiplier);
+            priceList.set($priceList.map(price => price * multiplier)); 
+        }
+        
 
         // set initial price and amount
         let previousClose = $priceList[0];
@@ -563,12 +575,12 @@
                 <th colspan="1" class='buySellInputTh'>
                     <div class='noWrap'>
                         <input 
-                            id='buySellInput' 
                             type='number' 
                             bind:value={buyThreshold} 
                             on:change={changeBuyThreshold} 
                             bind:this={buyThresholdInput} 
-                        /> <Fa icon={faPercent} />
+                        /> 
+                        <Fa icon={faPercent} />
                     </div>
                 </th>
                 <td class='rangeTd' colspan="2">
@@ -593,12 +605,12 @@
                 <th colspan="1" class='buySellInputTh'>
                     <div class='noWrap'>
                         <input 
-                            id='buySellInput' 
                             type='number' 
                             bind:value={sellThreshold} 
                             on:change={changeSellThreshold} 
                             bind:this={sellThresholdInput} 
-                        /> <Fa icon={faPercent} />
+                        /> 
+                        <Fa icon={faPercent} />
                     </div>
                 </th>
                 <td class='rangeTd' colspan="2">
@@ -631,12 +643,26 @@
             </tr>
             {#if (more)}
                 <tr transition:fade="{{ duration: 80 }}">
+                    <th colspan="2" class='hidden'>Initial Investment</th>
+                    <th class='hidden' colspan="1"></th>
+                    <td data-label='Initial Investment' colspan="2">
+                        <Fa icon={faDollar} />
+                        <input 
+                            type='number' 
+                            bind:value={initialInvestment} 
+                            on:change={recalculate}
+                            placeholder="0"
+                            min=0
+                        /> 
+                    </td>
+                </tr>
+                <tr transition:fade="{{ duration: 80 }}">
                     <th colspan="2" class='hidden'>Start Invested</th>
                     <th class='hidden' colspan="1"></th>
                     <td data-label='Start Invested' colspan="2">
                         <Switch bind:checked={startInvested} on:change={toggleInvested} />
                     </td>
-                </tr>   
+                </tr>  
             {/if}
             <tr id="submitRow">
                 <td colspan="5">
@@ -706,8 +732,8 @@
     .inputTd {
         padding-top: 0;
     }
-    #buySellInput {
-        width: 3rem;
+    input[type=number] {
+        width: 3.5rem;
         text-align: center;
     }
     .noWrap {
@@ -758,10 +784,6 @@
         .rangeTd {
             padding-bottom: .7rem;
         }
-        /* .buySellInputTh {
-            display: block;
-            text-align: right;
-        } */
         .buySellLabelTh {
             text-align: left;
         }

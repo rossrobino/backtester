@@ -43,7 +43,7 @@
             label: 'Buy & Hold - '+ $symbol,
             borderColor: 'rgb(252,191,84)',
             backgroundColor: 'white',
-            borderWidth: 4,
+            borderWidth: 3,
             radius: 0,
             data: buyAndHoldData,
             borderDash: [5, 5],
@@ -64,7 +64,7 @@
                 label: $portfolio[i].id,
                 borderColor: $portfolio[i].color,
                 backgroundColor: $portfolio[i].color,
-                borderWidth: 4,
+                borderWidth: 3,
                 radius: 0,
                 data: entryData
             }
@@ -75,7 +75,7 @@
             label: 'Current',
             borderColor: $entry.color,
             backgroundColor: $entry.color,
-            borderWidth: 4,
+            borderWidth: 3,
             radius: 0,
             data: volData
         }

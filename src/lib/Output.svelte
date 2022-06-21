@@ -167,7 +167,7 @@
                 </table>
             {/if}
             <table id="summaryTable" in:fade="{fadeParameters}">
-                <caption>Summary - Current Strategy</caption>
+                <caption>Summary</caption>
                     <tr>
                         <th class='hidden' colspan="4"></th>
                         <th class='hidden'>{showAllData ? 'All' : 'Trades'}</th>

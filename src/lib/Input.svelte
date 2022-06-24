@@ -7,12 +7,11 @@
  -->
 
 <script>
-    import { apiData, dateList, endDate, endPrice, entry, entryId, error, firstChartRender, loading, metadata, priceList, rateOfReturn, startDate, startPrice, strategy, portfolio, submitted, success, symbol, ticker, timeSeriesDaily, tradeList, volList, colorList } from '../stores';
-    import { fade } from 'svelte/transition'
+    import { apiData, dateList, endDate, endPrice, entry, entryId, error, firstChartRender, loading, metadata, optimized, priceList, rateOfReturn, returnList, startDate, startPrice, strategy, portfolio, submitted, success, symbol, ticker, timeSeriesDaily, tradeList, volList, colorList } from '../stores';
     import Switch from '$lib/Switch.svelte';
     import Range from '$lib/Range.svelte';
     import Fa from 'svelte-fa/src/fa.svelte';
-    import { faDollar, faPercent, faSpinner, faChartLine } from '@fortawesome/free-solid-svg-icons/index.es';
+    import { faBolt, faCheck, faDollar, faPercent, faSpinner, faChartLine } from '@fortawesome/free-solid-svg-icons/index.es';
 
     // import API key, assign correctly depending on environment
     import { AV_API_KEY } from '$lib/env';
@@ -39,7 +38,12 @@
     let buyThresholdInput;
     let sellThresholdInput;
     let multiplier;
-    let initialInvestment;
+    let initialInvestment = 100;
+    let returnColor;
+    let maxReturn;
+    let minReturn;
+    let optBuyThres;
+    let optSellThres;
 
     // set default percentages for buy/sell thresholds
     let sellThreshold = 1;
@@ -420,6 +424,7 @@
         getPrices();
         submitted.set(true);
         success.set(false);
+        resetOptimized();
     }
 
     // input changes    
@@ -432,6 +437,7 @@
             let originalLongTerm = longTerm;
             let newLongTerm = checkLongTerm();
             if (originalLongTerm || (!originalLongTerm && !newLongTerm)) {
+                resetOptimized();
                 setData($apiData);
                 recalculate();
             } else {
@@ -446,12 +452,14 @@
         }
     }
     function changeStrategy() {
+        resetOptimized()
         setThresholds();
         if ($success && trimmedUpperTicker === $symbol) {
             recalculate();
         }
     }
     function changeBuySell() {
+        resetOptimized();
         buyUp = !buyUp;
         let temp = buyThreshold;
         buyThreshold = sellThreshold;
@@ -485,7 +493,14 @@
     function toggleMore() {
         more = !more;
     }
+    function changeInitialInvestment() {
+        recalculate();
+        if ($optimized) {
+            maxReturn = $entry.return;
+        }
+    }
     function toggleInvested() {
+        resetOptimized();
         startInvested = !startInvested;
         recalculate();
     }
@@ -499,6 +514,77 @@
             portfolio.set([]);
             entryId.set(1);
             colorList.set($colorList.slice(0,3));
+        }
+    }
+
+    function resetOptimized() {
+        optimized.set(false);
+        optBuyThres = undefined;
+        optSellThres = undefined;
+        maxReturn = undefined;
+        minReturn = undefined;
+    }
+
+    function normalize(maximum, minimum, value) {
+        return (value - minimum)/(maximum - minimum);
+    }
+
+    function optimize() {
+        if ($entry.return !== maxReturn) {
+            let incrementor = 1;
+            returnList.set([]);
+            for (let i = rangeMin; i < rangeMax+incrementor; i+=incrementor) {
+                for (let j = rangeMin; j < rangeMax+incrementor; j+=incrementor) {
+                    buyThreshold = i;
+                    sellThreshold = j;
+                    if (buyUp) {
+                        if (sellThreshold > buyThreshold) {
+                            continue;
+                        }
+                    } else {
+                        if (sellThreshold < buyThreshold) {
+                            continue;
+                        }
+                    }
+                    recalculate();
+                        if ($entry.return > maxReturn || (!maxReturn && maxReturn !== 0)) {
+                            maxReturn = $entry.return;
+                            optBuyThres = buyThreshold;
+                            optSellThres = sellThreshold;
+                        } 
+                        if ($entry.return < minReturn || !minReturn && minReturn !== 0) {
+                            minReturn = $entry.return;
+                        } 
+                        if ($entry.return < 0) {
+                            returnColor = 'rgba(255,0,0,.3)';
+                        } else {
+                            returnColor = 'rgba(0,255,0,.3)';
+                        }
+                        $returnList.push(
+                            {
+                                "label": [$entry.return+ '%'],
+                                "data": [{
+                                        "x": buyThreshold,
+                                        "y": sellThreshold,
+                                        "r": Math.abs($entry.return),
+                                }],
+                                "backgroundColor": returnColor
+                            }
+                        );
+                }
+            }
+            for(let obj of $returnList) {
+                obj.data[0].r = normalize(
+                    (Math.abs(maxReturn) > Math.abs(minReturn) ? Math.abs(maxReturn) : Math.abs(minReturn)),
+                    0,
+                    obj.data[0].r
+                ) * ($strategy.type === 'PRICE' ? 12 : 5); // controls how large circles are
+            }
+            console.log($returnList.length)
+            buyThreshold = optBuyThres;
+            sellThreshold = optSellThres;
+            calculate();
+            optimized.set(true);
         }
     }
 </script>
@@ -550,6 +636,7 @@
                         id="ticker" 
                         bind:value={$ticker} 
                         bind:this={tickerInput} 
+                        onclick="this.setSelectionRange(0, this.value.length)"
                         placeholder="ex: AAPL" 
                         required 
                     >
@@ -642,7 +729,7 @@
                 </td>
             </tr>
             {#if (more)}
-                <tr transition:fade="{{ duration: 80 }}">
+                <tr>
                     <th colspan="2" class='hidden'>Initial Investment</th>
                     <th class='hidden' colspan="1"></th>
                     <td data-label='Initial Investment' colspan="2">
@@ -650,13 +737,13 @@
                         <input 
                             type='number' 
                             bind:value={initialInvestment} 
-                            on:change={recalculate}
+                            on:change={changeInitialInvestment}
                             placeholder="0"
                             min=0
                         /> 
                     </td>
                 </tr>
-                <tr transition:fade="{{ duration: 80 }}">
+                <tr>
                     <th colspan="2" class='hidden'>Start Invested</th>
                     <th class='hidden' colspan="1"></th>
                     <td data-label='Start Invested' colspan="2">
@@ -664,16 +751,28 @@
                     </td>
                 </tr>  
             {/if}
-            <tr id="submitRow">
-                <td colspan="5">
+            <tr>
+                <td colspan={$success ? "3" : "5"}>
                     <button type="submit">
                         {#if ($loading)}
-                            <Fa icon={faSpinner} spin/>&nbsp LOADING
+                            <Fa icon={faSpinner} spin/> LOADING
                         {:else}
-                            <Fa icon={faChartLine} />&nbsp; SUBMIT 
+                            <Fa icon={faChartLine} /> SUBMIT 
                         {/if}
                     </button>
                 </td>
+                {#if $success}
+                    <td colspan="2">
+                        <button on:click|preventDefault={optimize} type="button">
+                            {#if ($entry.return === maxReturn)}
+                                <Fa icon={faCheck} />
+                            {:else}
+                                <Fa icon={faBolt} /> 
+                            {/if}
+                            OPTIMIZE
+                        </button>
+                    </td>
+                {/if}
             </tr>
         </tbody>
     </table>
@@ -699,7 +798,7 @@
         cursor: pointer;
     }
     button {
-        width: 35%;
+        width: 45%;
         height: 2.6rem;
         background-color: rgb(112,105,253);
         border-radius: 3px;

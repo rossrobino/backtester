@@ -17,15 +17,15 @@
 -->
 
 <script>
-    import { colorList, endDate, endPrice, entry, entryId, error, rateOfReturn, startDate, startPrice, strategy, portfolio, submitted, success, symbol, tradeList } from '../stores';
+    import { colorList, endDate, endPrice, entry, entryId, error, rateOfReturn, startDate, startPrice, strategy, optimized, portfolio, submitted, success, symbol, tradeList  } from '../stores';
     import { fade } from 'svelte/transition';
     import Switch from '$lib/Switch.svelte';
     import Chart from '$lib/Chart.svelte';
     import Fa from 'svelte-fa/src/fa.svelte';
     import { faArrowTrendUp,faFolderPlus, faMinus, faPlus } from '@fortawesome/free-solid-svg-icons/index.es';
+    import BubbleChart from './BubbleChart.svelte';
 
     let showAllData = false;
-    let addedEntry = false;
     const fadeParameters = { duration: 400 };
 
     function round(value, decimals) {
@@ -74,28 +74,24 @@
             <table id='chartTable' in:fade="{fadeParameters}">
                 <!-- <caption>Comparison</caption> -->
                 <tbody>
-                    <tr>
-                        {#key $entry}
-                            <Chart /> 
-                        {/key}
-                    </tr>
+                    {#key $entry}
+                        <tr>
+                            <Chart />
+                        </tr>
+                    {/key}
                     <tr>
                         <td>
                             {#if ($portfolio.length === 0)}       
                                 <button on:click={addEntry}><Fa icon={faFolderPlus}/> CREATE PORTFOLIO</button>
-                            {:else}
-                                {#if !entryCheck($entry, $portfolio)}
-                                    <button on:click={addEntry}><Fa icon={faPlus}/> ADD</button>
-                                {/if}
                             {/if}
                         </td>
-                    </tr>  
+                    </tr> 
                 </tbody>
             </table>
             <table in:fade="{fadeParameters}">
                 <thead>
                     <tr>
-                        <th scope="col">Strategy</th>
+                        <th scope="col">Strategy  - {$symbol}</th>
                         <th scope="col">{$startDate}</th>
                         <th scope="col">{$endDate}</th>
                         <th scope="col">Return</th>
@@ -104,14 +100,14 @@
                 <tbody>
                     <tr>
                         <td data-label="Strategy">Buy and Hold</td>
-                        <td data-label='{$startDate}'>{round($startPrice,2)}</td>
-                        <td data-label='{$endDate}'>{round($endPrice, 2)}</td>
+                        <td data-label='{$startDate}'>${round($startPrice,2)}</td>
+                        <td data-label='{$endDate}'>${round($endPrice, 2)}</td>
                         <td data-label="Return">{$rateOfReturn}%</td>
                     </tr>
                     <tr>
                         <td data-label="Strategy">Current</td>
-                        <td data-label='{$startDate}'>{round($startPrice,2)}</td>
-                        <td data-label='{$endDate}'>{$tradeList[$tradeList.length-1].amount}</td>
+                        <td data-label='{$startDate}'>${round($startPrice,2)}</td>
+                        <td data-label='{$endDate}'>${$tradeList[$tradeList.length-1].amount}</td>
                         <td data-label="Return">{round((($tradeList[$tradeList.length-1].amount)-$startPrice)/$startPrice*100, 2)}%</td>
                     </tr>
                 </tbody>
@@ -163,6 +159,18 @@
                                 {/if}
                             </td>
                         </tr>  
+                    </tbody>
+                </table>
+            {/if}
+            {#if $optimized}
+                <table id='chartTable' in:fade="{fadeParameters}">
+                    <caption>Optimize: Compare Returns</caption>
+                    <tbody>
+                        {#key $endPrice}
+                            <tr>
+                                <BubbleChart />
+                            </tr>
+                        {/key}
                     </tbody>
                 </table>
             {/if}

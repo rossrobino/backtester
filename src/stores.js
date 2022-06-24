@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 
+export const optimized = writable(false);
 export const apiData = writable({});
 export const colorList = writable([
     'rgb(112,105,253)',
@@ -21,6 +22,7 @@ export const startDate = writable('');
 export const startPrice = writable(0);
 export const strategy = writable({});
 export const portfolio = writable([]);
+export const returnList = writable([]);
 export const submitted = writable(false);
 export const success = writable(false);
 export const symbol = writable('');

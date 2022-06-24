@@ -61,7 +61,7 @@
         }
         datasets.push(
             {
-                label: $portfolio[i].id,
+                label: $portfolio[i].id + ' - ' + $portfolio[i].ticker,
                 borderColor: $portfolio[i].color,
                 backgroundColor: $portfolio[i].color,
                 borderWidth: 3,
@@ -72,10 +72,10 @@
     }
     datasets.push(
         {
-            label: 'Current',
+            label: 'Current - ' + $entry.ticker,
             borderColor: $entry.color,
             backgroundColor: $entry.color,
-            borderWidth: 3,
+            borderWidth: 5,
             radius: 0,
             data: volData
         }

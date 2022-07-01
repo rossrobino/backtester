@@ -38,7 +38,7 @@
     let buyThresholdInput;
     let sellThresholdInput;
     let multiplier;
-    let initialInvestment = 100;
+    let initialInvestment;
     let returnColor;
     let maxReturn;
     let minReturn;
@@ -218,6 +218,12 @@
 
     // determine results and set values into stores.js
     function calculate() {
+
+        // if initial investment is not entered use price on first day
+        if(!initialInvestment) {
+            initialInvestment = $startPrice;
+        }
+
         // empty out lists in case of multiple submissions
         priceList.set([]);
         tradeList.set([]);
@@ -239,9 +245,10 @@
                 $volList.push(parseFloat($timeSeriesDaily[date]["6. volume"]));
             }
         }
+
         // adjust to user entered starting amount
         if (initialInvestment) {
-            startPrice.set(Number($timeSeriesDaily[$startDate]["5. adjusted close"]));
+            startPrice.set(Number($timeSeriesDaily[$startDate]["5. adjusted close"]));  // must reset these in case of multiple calculations without submission
             endPrice.set(Number($timeSeriesDaily[$endDate]["5. adjusted close"]));
             multiplier = initialInvestment/$startPrice;
             startPrice.set($startPrice*multiplier);
@@ -249,7 +256,6 @@
             priceList.set($priceList.map(price => price * multiplier)); 
         }
         
-
         // set initial price and amount
         let previousClose = $priceList[0];
         let amount = $priceList[0];
@@ -556,9 +562,9 @@
                             minReturn = $entry.return;
                         } 
                         if ($entry.return < 0) {
-                            returnColor = 'rgba(255,0,0,.3)';
+                            returnColor = 'rgba(255,33,56,.6)';
                         } else {
-                            returnColor = 'rgba(0,255,0,.3)';
+                            returnColor = 'rgba(0,165,0,.6)';
                         }
                         $returnList.push(
                             {
@@ -580,7 +586,6 @@
                     obj.data[0].r
                 ) * ($strategy.type === 'PRICE' ? 12 : 5); // controls how large circles are
             }
-            console.log($returnList.length)
             buyThreshold = optBuyThres;
             sellThreshold = optSellThres;
             calculate();
@@ -674,7 +679,7 @@
                     <Range 
                         min="{rangeMin}" 
                         max={rangeMax} 
-                        id="sellThreshold" 
+                        id="buyThreshold" 
                         bind:value={buyThreshold} 
                         on:change={changeBuyThreshold}
                         thumbColor='rgb(255,33,56)' 

@@ -220,7 +220,7 @@
     function calculate() {
 
         // if initial investment is not entered use price on first day
-        if(!initialInvestment) {
+        if(!initialInvestment || $portfolio.length === 0) {
             initialInvestment = $startPrice;
         }
 
@@ -744,7 +744,8 @@
                             bind:value={initialInvestment} 
                             on:change={changeInitialInvestment}
                             placeholder="0"
-                            min=0
+                            min="0"
+                            step="any"
                         /> 
                     </td>
                 </tr>

@@ -80,6 +80,6 @@
 <style>
     div {
         position: relative;
-        height: 23em;
+        height: 15em;
     }
 </style>

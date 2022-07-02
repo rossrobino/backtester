@@ -18,7 +18,7 @@
 
 <script>
     import { colorList, endDate, endPrice, entry, entryId, error, rateOfReturn, startDate, startPrice, strategy, optimized, portfolio, submitted, success, symbol, tradeList  } from '../stores';
-    import { fade } from 'svelte/transition';
+    import { fade, fly } from 'svelte/transition';
     import Switch from '$lib/Switch.svelte';
     import Chart from '$lib/Chart.svelte';
     import Fa from 'svelte-fa/src/fa.svelte';
@@ -71,7 +71,7 @@
         {#if ($tradeList.length === 0)}
             <p>Please select a new date.</p>
         {:else}
-            <table id='chartTable' in:fade="{fadeParameters}">
+            <table class='chartTable' in:fade="{fadeParameters}">
                 <!-- <caption>Comparison</caption> -->
                 <tbody>
                     {#key $entry}
@@ -83,11 +83,25 @@
                         <td>
                             {#if ($portfolio.length === 0)}       
                                 <button on:click={addEntry}><Fa icon={faFolderPlus}/> CREATE PORTFOLIO</button>
+                            {:else}
+                                <button on:click={removeEntry}><Fa icon={faMinus}/> REMOVE</button>
+                                {#if !entryCheck($entry, $portfolio)}
+                                    <button on:click={addEntry}><Fa icon={faPlus}/> ADD</button>
+                                {/if}
                             {/if}
                         </td>
                     </tr> 
                 </tbody>
             </table>
+            {#if $optimized}
+                <table class='chartTable' id='bubble' in:fly="{{ y: -100, duration: 400 }}">
+                    <tbody>
+                        <tr>
+                            <BubbleChart />
+                        </tr>
+                    </tbody>
+                </table>
+            {/if}
             <table in:fade="{fadeParameters}">
                 <thead>
                     <tr>
@@ -113,7 +127,7 @@
                 </tbody>
             </table>
             {#if ($portfolio.length > 0)}
-                <table in:fade="{fadeParameters}" id='portfolio'>
+                <table transition:fly="{{ y: -50, duration: 400 }}" id='portfolio'>
                     <caption>Portfolio</caption>
                     {#if ($portfolio.length > 0)}
                         <thead>
@@ -159,18 +173,6 @@
                                 {/if}
                             </td>
                         </tr>  
-                    </tbody>
-                </table>
-            {/if}
-            {#if $optimized}
-                <table id='chartTable' in:fade="{fadeParameters}">
-                    <caption>Optimize: Compare Returns</caption>
-                    <tbody>
-                        {#key $endPrice}
-                            <tr>
-                                <BubbleChart />
-                            </tr>
-                        {/key}
                     </tbody>
                 </table>
             {/if}
@@ -301,13 +303,14 @@
         color: #555;
         letter-spacing: 0;
     }
-    #chartTable, #summaryTable {
+    .chartTable, #summaryTable {
         margin-bottom: 1rem;
         margin-top: 1.5rem;
     }
-    #chartTable tr {
+    .chartTable tr {
         border-bottom: none;
     }
+
     #portfolio thead tr th {
         font-size: .8rem;
     }
@@ -338,8 +341,16 @@
         table td:last-child {
             border-bottom: 2px solid #ddd;
         }
+
+        .chartTable td:last-child {
+            border: none;
+        }
+
         #summaryTable {
             margin-bottom: 0;
+        }
+        #bubble {
+            margin-top: 0;
         }
     }
 </style>

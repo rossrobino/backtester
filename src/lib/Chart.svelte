@@ -41,7 +41,7 @@
     let datasets = [
         {
             label: 'Buy & Hold - '+ $symbol,
-            borderColor: 'rgb(252,191,84)',
+            borderColor: '#aaa',
             backgroundColor: 'white',
             borderWidth: 3,
             radius: 0,

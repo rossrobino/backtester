@@ -3,6 +3,21 @@
 	import Footer from '$lib/Footer.svelte';
 </script>
 
+<svelte:head>
+	<title>Backtester</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+		body {
+			margin: 0;
+			font-family: 'Roboto', sans-serif;
+		}
+		::selection {
+			color: white;
+			background: rgb(112,105,253);
+		}
+	</style>
+</svelte:head>
+
 <div id='wrapAll'>
 	<div>
 		<header>
@@ -28,5 +43,6 @@
 		flex-direction: column;
 		justify-content: space-between;
 		height: 100vh;
+		height: 100dvh;
 	}
 </style>

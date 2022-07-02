@@ -5,7 +5,7 @@ export const apiData = writable({});
 export const colorList = writable([
     'rgb(112,105,253)',
     'rgb(255,33,56)',
-    '#aaa'
+    'rgb(0,165,0)'
 ]);
 export const dateList = writable([]);
 export const endDate = writable('');

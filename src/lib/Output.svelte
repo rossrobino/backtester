@@ -127,7 +127,7 @@
                 </tbody>
             </table>
             {#if ($portfolio.length > 0)}
-                <table transition:fly="{{ y: -50, duration: 400 }}" id='portfolio'>
+                <table in:fly="{{ y: -50, duration: 400 }}" id='portfolio'>
                     <caption>Portfolio</caption>
                     {#if ($portfolio.length > 0)}
                         <thead>

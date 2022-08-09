@@ -16,7 +16,7 @@
 
 <script>
     import { onMount } from 'svelte';
-    import Chart from 'chart.js/auto/auto.esm';
+    import Chart from 'chart.js/auto/auto.js';
     import { dateList, firstChartRender, priceList, portfolio, entry, symbol } from '../stores'
 
     let comparisonChart;

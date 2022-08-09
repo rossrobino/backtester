@@ -142,7 +142,7 @@
     
     onMount(()=> {
         const ctx = comparisonChart.getContext('2d');
-        var myChart = new Chart(ctx, config);
+        let myChart = new Chart(ctx, config);
     });
 </script>
 

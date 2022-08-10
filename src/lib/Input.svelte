@@ -1,5 +1,5 @@
 <!-- 
-        table styles from:
+        Table styles from:
         Simple Responsive Table in CSS
         Matt Smith
         5/26/22

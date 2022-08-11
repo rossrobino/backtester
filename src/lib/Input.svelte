@@ -220,8 +220,8 @@
     function calculate() {
 
         // if initial investment is not entered use price on first day
-        if(!initialInvestment || $portfolio.length === 0) {
-            initialInvestment = $startPrice;
+        if(!initialInvestment) {
+            initialInvestment = round($startPrice, 2);
         }
 
         // empty out lists in case of multiple submissions
@@ -838,7 +838,7 @@
         padding-top: 0;
     }
     input[type=number] {
-        width: 3.5rem;
+        width: 4rem;
         text-align: center;
     }
     .noWrap {

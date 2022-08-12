@@ -26,6 +26,9 @@
     import BubbleChart from './BubbleChart.svelte';
 
     let showAllData = false;
+    let startTotal = 0;
+    let endTotal = 0;
+    let returnTotal = 0;
     const fadeParameters = { duration: 400 };
 
     function round(value, decimals) {
@@ -51,6 +54,7 @@
             $portfolio = $portfolio;
             $entryId++;
             $colorList.push(randomColor());
+            calcTotals();
         }
     }
     function removeEntry() {
@@ -61,7 +65,17 @@
             }
             $portfolio.pop();
             $entry.id = $entryId;
+            calcTotals();
         }
+    }
+    function calcTotals() {
+        startTotal = 0;
+        endTotal = 0;
+        for (let i = 0; i < $portfolio.length; i++) {
+            startTotal += $portfolio[i].startPrice;
+            endTotal += $portfolio[i].endPrice;
+        }
+        returnTotal = round(((endTotal/startTotal)-1)*100, 2)
     }
 </script>
 
@@ -164,6 +178,20 @@
                                     <td data-label="Return">{entry.return}%</td>
                                 </tr>
                             {/each}
+                            {#if ($portfolio.length > 1)}
+                                <tr>
+                                    <td data-label="#">Total</td>
+                                    <td data-label="Ticker">-</td>
+                                    <td data-label="Start">{startTotal}</td>
+                                    <td data-label="End">{endTotal}</td>
+                                    <td data-label="Time Frame">-</td>
+                                    <td data-label="Strategy">-</td>
+                                    <td data-label="Buy">-</td>
+                                    <td data-label="Sell">-</td>
+                                    <td data-label="Start Invested">-</td>
+                                    <td data-label="Return">{returnTotal}%</td>
+                                </tr>
+                            {/if}
                         {/key}
                         <tr>
                             <td colspan="10">
